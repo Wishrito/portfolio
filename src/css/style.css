@@ -17,17 +17,20 @@ body {
 }
 
 /* Barre de navigation */
-.navbar {
+nav.navbar {
+    top: 0px;
     z-index: 1000;
     position: fixed;
     display: flex;
     width: 100vw;
+    height: auto;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-around;
     background-color: #333;
     color: white;
     padding: 10px 0;
-    justify-content: space-between;
+    margin-top: 0;
+        /* Ajoute une marge supérieure */
 
     & a {
         padding: 10px;
@@ -39,14 +42,18 @@ body {
         border-radius: 10px;
 
         &:hover {
+            height: 1000px;
             background-color: aqua;
             color: #ccc;
+            height: initial;
         }
     }
 }
 
 /* Section principale */
 main {
+    padding-top: 130px;
+        /* Ajuste la valeur pour tenir compte de la hauteur de la barre de navigation */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -68,10 +75,6 @@ main {
         height: 200px;
         border-radius: 50%;
         margin-bottom: 20px;
-
-        &#photo:hover {
-            animation: bounce;
-        }
     }
 }
 
@@ -173,54 +176,35 @@ main {
 }
 
 /* Pied de page */
-footer {
-    height: 100px;
+footer.pageFooter {
+    width: 100vw;
+    height: 75px;
     display: flex;
     align-items: center;
     justify-content: center;
+    justify-content: space-around;
     background-color: #333;
     color: white;
     padding: 10px;
 
-    & a {
-        transition: left 1s;
+    a {
+            transition: color 1s, border 1s ease-in-out;
         color: white;
         text-decoration: none;
         margin: 10px;
+        border-bottom: 2px solid transparent;
 
         &:hover {
             color: #ccc;
-            border: aqua;
+            border-color: aqua;
             border-style: outset;
             border-right: none;
-            border-top: none;
             border-left: none;
+            border-top: none;
 
             &::before {
                 left: 100%;
             }
         }
-    }
-}
-
-@keyframes bounce {
-    0% {
-        transform: translateY(0);
-    }
-
-    25% {
-        transform: translateY(-20px);
-    }
-
-    50% {
-        transform: translateY(0);
-    }
-
-    75% {
-        transform: translateY(-10px);
-    }
-
-    100% {
-        transform: translateY(0);
     }
 }
