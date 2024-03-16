@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,8 +15,11 @@
     <!-- Barre de navigation -->
     <nav class="navbar">
         <a href="#">Accueil</a>
+        <p>|</p>
         <a href="#skills">Compétences</a>
-        <a href="#projects">Projets</a>
+        <p>|</p>
+        <a href="/pages/py-projects.html">Projets</a>
+        <p>|</p>
         <a href="#contact">Contact</a>
     </nav>
 
@@ -28,7 +30,7 @@
         <p>Je maîtrise les technologies HTML, CSS, JavaScript, PHP et MySQL.</p>
         <p>Voici quelques exemples de mes réalisations.</p>
         <img id="photo"
-            src="https://media.licdn.com/dms/image/C4E03AQHkZryk3p27XQ/profile-displayphoto-shrink_200_200/0/1657813334887?e=1711584000&v=beta&t=LGgKyMYsDqS5txjIS9-A3gfyfteCyaXziXrtNcCGkJI"
+            src="./src/img/1657813334887.png"
             alt="Photo de profil">
     </main>
 
@@ -37,45 +39,45 @@
         <h2>Mes compétences</h2>
         <div class="card">
             <a href="https://fr.wikipedia.org/wiki/Hypertext_Markup_Language" target="_blank" rel="noopener"><img
-                    src="src/img/HTML5-logo.png" alt="HTML" class="icon" title="HTML5"></a>
+                    src="./src/img/HTML5-logo.png" alt="HTML" class="icon" title="HTML5"></a>
             <h3>HTML</h3>
             <p>Création de pages web avec structure sémantique et accessible.</p>
         </div>
         <div class="card">
             <a href="https://fr.wikipedia.org/wiki/Cascading_Style_Sheet" target="_blank" rel="noopener noreferrer"><img
-                    src="src/img/CSS3-logo.png" alt="CSS" class="icon" title="CSS3"></a>
+                    src="./src/img/CSS3-logo.png" alt="CSS" class="icon" title="CSS3"></a>
             <h3>CSS</h3>
             <p>Mise en forme et animation d'éléments d'une page web avec styles modernes et responsives.
             </p>
         </div>
         <div class="card">
             <a href="https://fr.wikipedia.org/wiki/JavaScript" target="_blank" rel="noopener"><img
-                    src="src/img/JavaScript-logo.png" alt="JavaScript" class="icon" title="JavaScript"></a>
+                    src="./src/img/JavaScript-logo.png" alt="JavaScript" class="icon" title="JavaScript"></a>
             <h3>JavaScript</h3>
             <p>Ajout d'interactivité et de dynamique aux pages web avec des scripts et des librairies.
             </p>
         </div>
         <div class="card">
             <a rel="noopener" target="_blank" href="https://fr.wikipedia.org/wiki/Structured_Query_Language"><img
-                    src="src/img/Sql-logo.png" alt="MySQL" class="icon" title="SQL"></a>
+                    src="./src/img/Sql-logo.png" alt="MySQL" class="icon" title="SQL"></a>
             <h3>MySQL</h3>
             <p>Manipulation de données avec système de gestion de base de données relationnelles.</p>
         </div>
         <div class="card">
             <a href="https://fr.wikipedia.org/wiki/Java_(technique)" target="_blank" rel="noopener"><img
-                    src="src/img/Java-logo.jpg" alt="Java" class="icon" title="Java"></a>
+                    src="./src/img/Java-logo.jpg" alt="Java" class="icon" title="Java"></a>
             <h3>Java</h3>
             <p>Développement d'applications avec le language Java.</p>
         </div>
         <div class="card">
             <a href="https://fr.wikipedia.org/wiki/Visual_Basic" target="_blank" rel="noopener"><img
-                    src="src/img/VB-logo.png" alt="VisualBasic" class="icon" title="Visual Basic"></a>
+                    src="./src/img/VB-logo.png" alt="VisualBasic" class="icon" title="Visual Basic"></a>
             <h3>Visual Basic</h3>
             <p>Développement d'applications console avec Visual Basic.</p>
         </div>
         <div class="card">
             <a href="https://fr.wikipedia.org/wiki/Python_(langage)" target="_blank" rel="noopener"><img
-                    src="src/img/Python-logo.png" alt="VisualBasic" class="icon" title="Visual Basic"></a>
+                    src="./src/img/Python-logo.png" alt="VisualBasic" class="icon" title="Visual Basic"></a>
             <h3>Python</h3>
             <p>Développement de diverses applications en Python (voir <a href="#projects">Projets</a>)</p>
         </div>
@@ -84,12 +86,6 @@
     <!-- Section des projets -->
     <div class="projects" id="projects">
         <h2>Mes projets</h2>
-        <div class="card">
-            <img src="https://via.placeholder.com/300x200" alt="Projet 1">
-            <h3>Projet 1</h3>
-            <p>Description du projet 1</p>
-            <a href="#">Voir le projet</a>
-        </div>
         <div class="card">
             <img src="https://via.placeholder.com/300x200" alt="Projet 2">
             <h3>Projet 2</h3>
@@ -110,9 +106,11 @@
         </div>
     </div>
     <!-- Pied de page -->
-    <footer class="pageFooter">
-        <a href="#contact">Contactez-moi</a>
+    <footer class="pageFooter" id="contact">
+        <a rel=" noopener" href="mailto:contact.rayantremion@gmail.com" target="_blank">Contactez-moi</a>
+        <p>|</p>
         <a rel="noopener" href="https://github.com/wishrito" target="_blank">Suivez-moi sur GitHub</a>
+        <p>|</p>
         <a rel="noopener" href="https://www.linkedin.com/in/rayan-tremion/" target="_blank">Connectez-vous avec moi sur
             LinkedIn</a>
     </footer>
