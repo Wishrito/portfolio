@@ -1,5 +1,7 @@
+/* Bulma CSS */
 @import url(https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css);
 
+/* personal CSS */
 html {
     scroll-behavior: smooth;
 }
@@ -9,7 +11,7 @@ body {
 }
 
 /* Barre de navigation */
-nav.navbar {
+.navbar {
     top: 0px;
     z-index: 1000;
     position: fixed;
@@ -26,4 +28,7 @@ nav.navbar {
             scale: 105%;
         }
     }
+}
+.image.is-128x128 img {
+    border-radius: 50%;
 }
