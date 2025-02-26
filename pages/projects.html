@@ -1,50 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
-    <script src="{{url_for('static', filename='srcipts/script.js')}}" title="ImagePreview"></script>
-    <title>Mes projets</title>
-</head>
-
-<body>
-    <!-- Barre de navigation -->
-    <nav class="navbar" id="navbar">
-        <ul>
-            <li><a href="/">Accueil</a></li>
-            <li><a href="#skills">Compétences</a></li>
-            <li><a href="/projects">Projets</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
-    </nav>
-    <!-- Section des projets -->
-    <div class="projects" id="projects">
-        <h2>Mes projets</h2>
-        <div id="py-projects">
-            <div class="card">
-                <img src="" alt="">
-                <h3>Bread-Chan</h3>
-                <p>Bot Discord codé en Python</p>
-                <button type="button" onclick="redirect('bread-chan')">Voir le projet</button>
-            </div>
-            <div class="card">
-                <img src="" alt="">
-                <h3>Bread-Chan</h3>
-                <p>Bot Discord codé en Python</p>
-                <button type="button" onclick="redirect()">Voir le projet</button>
-            </div>
+{% extends "base.html" %}
+{% block title %}Mes projets{% endblock %}
+{% block content %}
+<!-- Section des projets -->
+<div class="projects" id="projects">
+    <h2>Mes projets</h2>
+    <div id="py-projects">
+        <div class="card">
+            <img src="" alt="">
+            <h3>Bread-Chan</h3>
+            <p>Bot Discord codé en Python</p>
+            <button type="button" onclick="redirect('bread-chan')">Voir le projet</button>
+        </div>
+        <div class="card">
+            <img src="" alt="">
+            <h3>Bread-Chan</h3>
+            <p>Bot Discord codé en Python</p>
+            <button type="button" onclick="redirect()">Voir le projet</button>
         </div>
     </div>
-    <footer class="pageFooter">
-        <a href="#contact">Contactez-moi</a>
-        <p>|</p>
-        <p onclick="redirect()">Suivez-moi sur GitHub</p>
-        <p>|</p>
-        <a rel="noopener" href="https://www.linkedin.com/in/rayan-tremion/" target="_blank">Connectez-vous avec moi sur
-            LinkedIn</a>
-    </footer>
-</body>
-
-</html>
+</div>
+{% endblock %}

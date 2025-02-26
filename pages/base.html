@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} Rayan TREMION - Portfolio {% endblock %}</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <script src="{{url_for('static', filename='srcipts/script.js')}}" title="ImagePreview"></script>
+</head>
+
+<body>
+    <!-- Barre de navigation -->
+    <nav class="navbar" id="navbar">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="#skills">Compétences</a></li>
+            <li><a href="/projects">Projets</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li><a href="/gists">Tutoriels</a></li>
+        </ul>
+    </nav>
+    <!-- Section principale -->
+    <div id="content">{% block content %}{% endblock %}</div>
+    <!-- Pied de page -->
+    <footer class="pageFooter" id="contact">
+        <a rel=" noopener" href="mailto:contact.rayantremion@gmail.com" target="_blank">Contactez-moi</a>
+        <p>|</p>
+        <a rel="noopener" href="https://github.com/wishrito" target="_blank">Suivez-moi sur GitHub</a>
+        <p>|</p>
+        <a rel="noopener" href="https://www.linkedin.com/in/rayan-tremion/" target="_blank">Connectez-vous avec moi sur
+            LinkedIn</a>
+    </footer>
+</body>
+
+</html>

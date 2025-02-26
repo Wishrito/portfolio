@@ -9,8 +9,6 @@ app = Flask(__name__)
 app.template_folder = Path(__file__).parent.parent / "pages"
 app.static_folder = Path(__file__).parent.parent / "src"
 
-print(f"static folder : {app.static_folder}")
-print(f"template folder : {app.template_folder}")
 
 @app.errorhandler(404)
 def page_not_found(error):
@@ -70,8 +68,16 @@ def get_gist():
 
     for gist in gists:
         if gist.id == gist_id:
-            gist_data = {'gist_id': gist.id, 'files': [{'name': gist.files[file].filename, 'type': gist.files[file].type}
-                                                       for file in gist.files], 'embed_url': f'https://gist.github.com/Wishrito/{gist.id}.js'}
+            gist_data = {
+                'gist_id': gist.id,
+                'files': [
+                    {
+                        'name': gist.files[file].filename,
+                        'type': gist.files[file].type
+                    } for file in gist.files
+                ],
+                'embed_url': f'https://gist.github.com/Wishrito/{gist.id}.js'
+            }
             gist_data['title'] = str(gist_data['files'][0]['name'].removesuffix(
                 '.md').title().replace('_', ' '))
             return render_template('tutorials.html', gist_data=gist_data)
