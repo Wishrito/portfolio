@@ -4,21 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../src/css/style.css">
-    <script src="/src/srcipts/script.js"></script>
-    <title>Projets Python</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <script src="{{url_for('static', filename='srcipts/script.js')}}" title="ImagePreview"></script>
+    <title>Mes projets</title>
 </head>
 
 <body>
     <!-- Barre de navigation -->
-    <nav class="navbar">
-        <a href="../index.html">Accueil</a>
-        <p>|</p>
-        <a href="#skills">Compétences</a>
-        <p>|</p>
-        <a href="./py-projects.html">Projets</a>
-        <p>|</p>
-        <a href="#contact">Contact</a>
+    <nav class="navbar" id="navbar">
+        <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="#skills">Compétences</a></li>
+            <li><a href="/projects">Projets</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
     </nav>
     <!-- Section des projets -->
     <div class="projects" id="projects">
