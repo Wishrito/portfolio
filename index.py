@@ -39,7 +39,11 @@ def about():
 @app.get('/gists')
 def get_gists():
     root_url = os.getenv(
-        "VERCEL_PROJECT_PRODUCTION_URL", request.url_root)
+        "VERCEL_PROJECT_PRODUCTION_URL", "default")
+    if root_url == "default":
+        root_url = request.url_root
+    else:
+        root_url = "https://" + root_url
     gists_list = requests.get(
         f"{root_url}/api/gist_metadata")
     return render_template('tutorials.html', gists=gists_list.json())
@@ -55,3 +59,6 @@ def get_gist():
 
     gist_data = requests.get(f"{root_url}/api/gist_metadata?id={gist_id}")
     return render_template('tutorials.html', gist_data=gist_data.json())
+
+
+app.run(debug=True)
