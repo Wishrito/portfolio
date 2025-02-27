@@ -12,11 +12,6 @@ app = Flask(__name__)
 app.template_folder = Path(__file__).parent.parent / "pages"
 app.static_folder = Path(__file__).parent.parent / "src"
 
-
-def register_blueprints(app: Flask):
-    app.register_blueprint(api_bp, url_prefix="/api")
-
-
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template("404.html")
@@ -50,12 +45,6 @@ def get_gist():
     gist_data = requests.get(f"{root_url}/api/gist_metadata?id={gist_id}")
     return render_template('tutorials.html', gist_data=gist_data.json())
 
-
-api_bp = Blueprint('api', __name__)
-api_bp.template_folder = app.template_folder
-api_bp.static_folder = app.static_folder
-
-
 def parse_tuto_image(file: GistFile) -> list[str]:
     texte = file.content
     pattern = r"!\[([^\]]+)\]"
@@ -63,7 +52,7 @@ def parse_tuto_image(file: GistFile) -> list[str]:
     return match
 
 
-@api_bp.get('/gist_metadata')
+@app.get('/api/gist_metadata')
 def get_gist_metadata():
     TOKEN = os.getenv('GITHUB_TOKEN')
     USERNAME = os.getenv('GITHUB_USERNAME')
@@ -118,6 +107,3 @@ def get_gist_metadata():
                 '.md').title().replace('_', ' '))
         return gists_list
     g.close()
-
-
-register_blueprints(app)
