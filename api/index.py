@@ -5,7 +5,7 @@ from flask import Flask, jsonify, redirect, render_template, request
 from github import Github
 import requests
 
-from utils import register_blueprints
+from .utils import register_blueprints
 
 app = Flask(__name__)
 app.template_folder = Path(__file__).parent.parent / "pages"
@@ -54,6 +54,3 @@ def get_gist():
             return render_template('tutorials.html', gist_data=gist_data.json())
         case _:
             return 'Gist not found 😔', 404
-
-
-app.run(debug=True)
