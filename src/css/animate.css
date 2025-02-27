@@ -1,0 +1,41 @@
+/* Style du conteneur */
+.circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(45deg, #ff6b6b, #556270);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    animation: pulse 3s infinite ease-in-out;
+}
+
+/* Style de l'image */
+.circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease-in-out;
+}
+
+/* Animation au survol */
+.circle:hover img {
+    transform: scale(1.1) rotate(10deg);
+}
+
+/* Animation de pulsation */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
