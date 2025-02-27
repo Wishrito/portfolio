@@ -59,6 +59,3 @@ def get_gist():
 
     gist_data = requests.get(f"{root_url}/api/gist_metadata?id={gist_id}")
     return render_template('tutorials.html', gist_data=gist_data.json())
-
-
-app.run(debug=True)
