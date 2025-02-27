@@ -130,6 +130,3 @@ def get_gist_metadata():
 
 
 register_blueprints(app)
-
-
-app.run(debug=True)
