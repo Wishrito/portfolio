@@ -15,11 +15,13 @@
 {% endblock %}
 {% block content %}
 <!-- Liste des gists -->
+{% if gists %}
 <div id="description">
     <p>Bienvenue sur la page des tutoriels ! Ici, vous trouverez une collection de micro-tutoriels Python couvrant
         divers sujets et astuces pour améliorer vos compétences en programmation. Chaque tutoriel est conçu pour être
         court et précis, vous permettant d'apprendre rapidement et efficacement.</p>
 </div>
+{% endif %}
 <div class="gists">
     {% if gists %}
         {% for gist in gists %}
