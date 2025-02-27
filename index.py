@@ -53,7 +53,11 @@ def get_gists():
 def get_gist():
     gist_id = request.args.get('id')
     root_url = os.getenv(
-        "VERCEL_PROJECT_PRODUCTION_URL", request.url_root)
+        "VERCEL_PROJECT_PRODUCTION_URL", "default")
+    if root_url == "default":
+        root_url = request.url_root
+    else:
+        root_url = "https://" + root_url
     if not gist_id:
         return redirect('/gists')
 
