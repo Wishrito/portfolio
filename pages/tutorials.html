@@ -2,11 +2,17 @@
 {% block title %}Mes Tutoriels{% endblock %}
 {% block meta %}
 <meta name="description" content="Page description">
-<meta property="og:title" content="Unique page title - My Site">
+<meta property="og:title" content="Portfolio - Tutoriels">
 <meta property="og:description" content="Page description">
 {% if gist_data %}
 <meta property="og:image"
     content="{{ url_for('static', filename='img/gists_img/' + gist_data['files'][0]['images'][0]) }}">
+<meta property="og:image:alt" content="{{ gist_data.title }}">
+<meta property="twitter:image"
+    content="{{ url_for('static', filename='img/gists_img/' + gist_data['files'][0]['images'][0]) }}">
+<meta property="twitter:image:alt" content="{{ gist_data.title }}">
+{% elif gists %}
+<meta property="og:image" content="{{ url_for('static', filename='img/gists_img/default_banner.jpg'}}">
 <meta property="og:image:alt" content="{{ gist_data.title }}">
 {% endif %}
 <meta property="og:locale" content="fr_FR">

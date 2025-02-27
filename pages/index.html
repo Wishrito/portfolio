@@ -2,12 +2,14 @@
     <meta name="description" content="Page description">
     <meta property="og:title" content="Unique page title - My Site">
     <meta property="og:description" content="Page description">
-    <meta property="og:image" content="https://www.mywebsite.com/image.jpg">
+    <meta property="og:image" content="{{url_for('static', filename='img/RT.png')}}">
     <meta property="og:image:alt" content="Image description">
     <meta property="og:locale" content="fr_FR">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
-    <meta property="og:url" content="https://www.mywebsite.com/page">
+    {% if root_url %}
+    <meta property="og:url" content="{{ root_url }}">
+    {% endif %}
 {% block title %}Mes projets{% endblock %}
 {% block content %}
 <main>

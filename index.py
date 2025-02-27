@@ -46,7 +46,7 @@ def get_gists():
         root_url = "https://" + root_url
     gists_list = requests.get(
         f"{root_url}/api/gist_metadata")
-    return render_template('tutorials.html', gists=gists_list.json())
+    return render_template('tutorials.html', gists=gists_list.json(), url=root_url)
 
 
 @app.get('/gist')
