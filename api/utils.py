@@ -1,6 +1,6 @@
 from flask import Blueprint, Flask
 
-from route_api import api_bp
+from .route_api import api_bp
 
 
 def register_blueprints(app: Flask):
