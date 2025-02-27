@@ -16,6 +16,38 @@ body {
     background-color: #f0f0f0;
 }
 
+#gist-thumbnail-container {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    /* Ajustez selon vos besoins */
+    height: 100%;
+    /* Ajustez selon vos besoins */
+}
+
+.gist-thumbnail {
+    width: 100px;
+    /* Taille réduite pour une icône */
+    height: 100px;
+    /* Ajustez en fonction du rendu souhaité */
+    object-fit: contain;
+    /* Permet de conserver les proportions */
+}
+
+#description {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+#description p {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+}
 /* Barre de navigation */
 .navbar {
     background-color: #333;

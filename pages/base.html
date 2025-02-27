@@ -7,6 +7,7 @@
     <title>{% block title %} Rayan TREMION - Portfolio {% endblock %}</title>
     <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
     <script src="{{url_for('static', filename='srcipts/script.js')}}" title="ImagePreview"></script>
+    {% block meta %}{% endblock %}
 </head>
 
 <body>
@@ -24,10 +25,10 @@
     <div id="content">{% block content %}{% endblock %}</div>
     <!-- Pied de page -->
     <footer class="pageFooter" id="contact">
-        <a rel=" noopener" href="mailto:contact.rayantremion@gmail.com" target="_blank">Contactez-moi</a>
-        <p>|</p>
+        <a rel="noopener" href="mailto:contact.rayantremion@gmail.com" target="_blank">Contactez-moi</a>
+        <span>|</span>
         <a rel="noopener" href="https://github.com/wishrito" target="_blank">Suivez-moi sur GitHub</a>
-        <p>|</p>
+        <span>|</span>
         <a rel="noopener" href="https://www.linkedin.com/in/rayan-tremion/" target="_blank">Connectez-vous avec moi sur
             LinkedIn</a>
     </footer>
