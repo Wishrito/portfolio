@@ -6,10 +6,10 @@
 <meta property="og:description" content="Page description">
 {% if gist_data %}
 <meta property="og:image"
-    content="{{ url_for('static', filename='' + gist_data['files'][0]['images'][0]) }}">
+    content="{{ gist_data['files'][0]['images'][0] }}">
 <meta property="og:image:alt" content="{{ gist_data.title }}">
 <meta property="twitter:image"
-    content="{{ url_for('static', filename='' + gist_data['files'][0]['images'][0]) }}">
+    content="{{ gist_data['files'][0]['images'][0] }}">
 <meta property="twitter:image:alt" content="{{ gist_data.title }}">
 {% elif gists %}
 <meta property="og:image"
