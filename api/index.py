@@ -51,6 +51,3 @@ def get_gist():
     if gist_data.status_code == 200:
         return render_template('tutorials.html', gist_data=gist_data.json())
     return 'Gist not found 😔', 404
-
-
-app.run(debug=True)
