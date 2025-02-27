@@ -6,9 +6,9 @@ from flask import Blueprint, request
 from github import Github
 from github.GistFile import GistFile
 
-api_bp = Blueprint('api', __name__)
-api_bp.template_folder = Path(__file__).parent.parent / "pages"
-api_bp.static_folder = Path(__file__).parent.parent / "src"
+api = Blueprint('api', __name__)
+api.template_folder = Path(__file__).parent / "pages"
+api.static_folder = Path(__file__).parent / "src"
 
 
 def parse_tuto_image(file: GistFile) -> list[str]:
@@ -18,7 +18,7 @@ def parse_tuto_image(file: GistFile) -> list[str]:
     return match
 
 
-@api_bp.get('/gist_metadata')
+@api.get('/gist_metadata')
 def get_gist_metadata():
     TOKEN = os.getenv('GITHUB_TOKEN')
     USERNAME = os.getenv('GITHUB_USERNAME')
