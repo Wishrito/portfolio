@@ -1,8 +1,8 @@
 import os
 import re
-from flask import Blueprint, request
 from pathlib import Path
 
+from flask import Blueprint, request
 from github import Github
 from github.GistFile import GistFile
 

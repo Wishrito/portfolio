@@ -5,7 +5,7 @@ from flask import Flask, jsonify, render_template, request
 from github import Github
 import requests
 
-from routes import register_blueprints
+from utils import register_blueprints
 
 app = Flask(__name__)
 app.template_folder = Path(__file__).parent.parent / "pages"
