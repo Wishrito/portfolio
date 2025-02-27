@@ -37,12 +37,7 @@ def get_gists():
         "VERCEL_PROJECT_PRODUCTION_URL", request.url_root)
     gists_list = requests.get(
         f"{root_url}/api/gist_metadata")
-    match gists_list.status_code:
-        case 200:
-            return render_template('tutorials.html', gists=gists_list.json())
-        case _:
-            return "Error", gists_list.status_code
-
+    return render_template('tutorials.html', gists=gists_list.json())
 
 @app.get('/gist')
 def get_gist():
@@ -53,16 +48,12 @@ def get_gist():
         return redirect('/gists')
 
     gist_data = requests.get(f"{root_url}/api/gist_metadata?id={gist_id}")
-    match gist_data:
-        case 200:
-            return render_template('tutorials.html', gist_data=gist_data.json())
-        case _:
-            return 'Gist not found 😔', 404
+    return render_template('tutorials.html', gist_data=gist_data.json())
 
 
 api_bp = Blueprint('api', __name__)
-api_bp.template_folder = Path(__file__).parent.parent / "pages"
-api_bp.static_folder = Path(__file__).parent.parent / "src"
+api_bp.template_folder = app.template_folder
+api_bp.static_folder = app.static_folder
 
 
 def parse_tuto_image(file: GistFile) -> list[str]:
@@ -72,7 +63,7 @@ def parse_tuto_image(file: GistFile) -> list[str]:
     return match
 
 
-@api_bp.route('/gist_metadata', methods=["GET"])
+@api_bp.get('/gist_metadata')
 def get_gist_metadata():
     TOKEN = os.getenv('GITHUB_TOKEN')
     USERNAME = os.getenv('GITHUB_USERNAME')
