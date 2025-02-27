@@ -13,7 +13,7 @@ api.static_folder = Path(__file__).parent / "src"
 
 def parse_tuto_image(file: GistFile) -> list[str]:
     texte = file.content
-    pattern = r"!\[([^\]]+)\]"
+    pattern = r"!\[[^\]]+\]\(([^)]+)\)"  # Capture uniquement l'URL
     match = re.findall(pattern, texte)
     return match
 

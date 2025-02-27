@@ -6,10 +6,10 @@
 <meta property="og:description" content="Page description">
 {% if gist_data %}
 <meta property="og:image"
-    content="{{ url_for('static', filename='img/gists_img/' + gist_data['files'][0]['images'][0]) }}">
+    content="{{ url_for('static', filename='gist_data['files'][0]['images'][0]') }}">
 <meta property="og:image:alt" content="{{ gist_data.title }}">
 <meta property="twitter:image"
-    content="{{ url_for('static', filename='img/gists_img/' + gist_data['files'][0]['images'][0]) }}">
+    content="{{ url_for('static', filename='gist_data['files'][0]['images'][0]') }}">
 <meta property="twitter:image:alt" content="{{ gist_data.title }}">
 {% elif gists %}
 <meta property="og:image"
@@ -39,7 +39,7 @@
                     <p>{{ gist.gist_description }}</p>
                     {% endif %}
                     <div class="gist-thumbnail-container"></div>
-                    <img class="gist-thumbnail" src="{{ url_for('static', filename='img/gists_img/' + gist['files'][0]['images'][0]) }}"
+                    <img class="gist-thumbnail" src="{{ gist['files'][0]['images'][0] }}"
                         alt="{{ gist.title }} thumbnail">
                 </div>
             </section>
