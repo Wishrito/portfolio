@@ -8,8 +8,8 @@ import requests
 from routes import register_blueprints
 
 app = Flask(__name__)
-app.template_folder = Path(__file__).parent.parent / "pages"
-app.static_folder = Path(__file__).parent.parent / "src"
+app.template_folder = Path(__file__).parent / "pages"
+app.static_folder = Path(__file__).parent / "src"
 
 register_blueprints(app)
 
