@@ -12,7 +12,8 @@
     content="{{ url_for('static', filename='img/gists_img/' + gist_data['files'][0]['images'][0]) }}">
 <meta property="twitter:image:alt" content="{{ gist_data.title }}">
 {% elif gists %}
-<meta property="og:image" content="{{ url_for('static', filename='img/gists_img/default_banner.jpg') }}">
+<meta property="og:image"
+    content="https://www.digital-learning.fse.manchester.ac.uk/wp-content/themes/uom-theme/assets/images/default-banner.jpg">
 <meta property="og:image:alt" content="Default banner">
 {% endif %}
 <meta property="og:locale" content="fr_FR">
