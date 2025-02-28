@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Spécifications du portfolio{% endblock %}
+{% block meta %}
+<meta name="description" content="Les technologies utilisées pour ce portfolio">
+<meta property="og:title" content="Portfolio - Spécifications">
+{% endblock %}
+{% block content %}
+<!-- Liste des outils -->
+{% if tools_data %}
+    <h2>Technologies Utilisées</h2>
+    <p>Python Version: {{ tools_data.python }}</p>
+    <h3>Bibliothèques Utilisées</h3>
+    <ul>
+        {% for lib in tools_data.libs %}
+            <li><a href="https://pypi.org/project/{{ lib.name }}">{{ lib.name }}</a>: {{ lib.version }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Aucune donnée disponible.</p>
+{% endif %}
+{% endblock %}
