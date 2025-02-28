@@ -1,4 +1,7 @@
 /* Styles de base */
+:root {
+    scroll-behavior: smooth;
+}
 body {
     font-family: Arial, sans-serif;
     margin: 0;

@@ -33,8 +33,9 @@ def get_gist_metadata():
         for gist in gists:
             if gist.id == gist_id:
                 gist_data = {
+                    'author': gist.owner.name,
                     'gist_id': gist.id,
-                    'gist_description': gist.description,
+                    'description': gist.description,
                     'files': [
                         {
                             'name': gist.files[file].filename,
@@ -54,7 +55,7 @@ def get_gist_metadata():
         gists_list = [
             {
                 'id': gist.id,
-                'gist_description': gist.description,
+                'description': gist.description,
                 'files': [
                     {
                         'name': gist.files[file].filename,

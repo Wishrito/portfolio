@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Mes Tutoriels{% endblock %}
 {% block meta %}
-<meta name="description" content="Page description">
+<meta name="description" content="Une bibliothèque contenant mes Gists Github">
 <meta property="og:title" content="Portfolio - Tutoriels">
-<meta property="og:description" content="Page description">
 {% if gist_data %}
+<meta name="author" content="{{ gist_data.author}}">
+<meta property="og:description" content="{{ gist_data.description}}">
 <meta property="og:image"
     content="{{ gist_data['files'][0]['images'][0] }}">
 <meta property="og:image:alt" content="{{ gist_data.title }}">
@@ -16,9 +17,6 @@
     content="https://www.digital-learning.fse.manchester.ac.uk/wp-content/themes/uom-theme/assets/images/default-banner.jpg">
 <meta property="og:image:alt" content="Default banner">
 {% endif %}
-<meta property="og:locale" content="fr_FR">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
 {% endblock %}
 {% block content %}
 <!-- Liste des gists -->
@@ -35,8 +33,8 @@
             <section>
                 <div class="gist">
                     <p><a href="/gist?id={{ gist.id }}">{{ gist.title }}</a></p>
-                    {% if gist.gist_description != '' %}
-                    <p>{{ gist.gist_description }}</p>
+                    {% if gist.description != '' %}
+                    <p>{{ gist.description }}</p>
                     {% endif %}
                     <div class="gist-thumbnail-container"></div>
                     <img class="gist-thumbnail" src="{{ gist['files'][0]['images'][0] }}"
