@@ -12,6 +12,7 @@ Dependencies:
     - python-dotenv: For loading environment variables.
     - requests: For making HTTP requests."""
 
+from flask import request, jsonify
 import json
 import os
 import re
@@ -65,15 +66,13 @@ def fetch_projects():
     # Récupérer les paramètres de pagination (page et repos par page)
     # Par défaut, la page 1 si pas de paramètre
     page = int(request.args.get('page', 1))
-    repos_per_page = 30  # Nombre de dépôts par page
+    repos_per_page = 5  # Nombre de dépôts par page
 
     github = Github(TOKEN)
     user = github.get_user(USERNAME)
 
-    # Récupérer les repos pour la page demandée
+    # Récupérer les repos avec pagination
     repos = user.get_repos()
-    repos = repos[(page-1) * repos_per_page: page *
-                  repos_per_page]  # Pagination
 
     # Préparer la réponse
     json_repos = {
@@ -92,13 +91,17 @@ def fetch_projects():
         ]
     }
 
-    # Ajout des informations de pagination
+    # Récupérer le nombre total de repos pour le calcul des pages
+    total_repos = user.public_repos  # Nombre total de repos publics
+    total_pages = (total_repos // repos_per_page) + \
+        (1 if total_repos % repos_per_page else 0)
+
+    # Ajouter les informations de pagination
     json_repos["pagination"] = {
         "page": page,
         "repos_per_page": repos_per_page,
-        # Total des repos pour calculer le nombre total de pages
-        "total_repos": repos.totalCount,
-        "total_pages": (repos.totalCount // repos_per_page) + (1 if repos.totalCount % repos_per_page else 0)
+        "total_repos": total_repos,
+        "total_pages": total_pages
     }
 
     return jsonify(json_repos)
