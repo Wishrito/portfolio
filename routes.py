@@ -63,7 +63,6 @@ def fetch_projects():
     TOKEN = os.getenv('GITHUB_TOKEN')
     USERNAME = os.getenv('GITHUB_USERNAME')
     github = Github(TOKEN)
-    session = HTMLSession()
 
     user = github.get_user(USERNAME)
     repos = user.get_repos()
@@ -85,10 +84,6 @@ def fetch_projects():
 
     json_repos["languages"] = {repo["languages"]
                                for repo in json_repos.get("projects")}
-    for project in json_repos:
-        raw_html = session.get(json_repos['url'])
-        meta_tag = raw_html.html.find("meta[property='og:image']", first=True)
-        project['icon'] = meta_tag.attrs.get('content')
     return jsonify(repos)
 
 
