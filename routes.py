@@ -68,14 +68,14 @@ def fetch_projects():
         json_repos = {
             "projects": [
                 {
-                    "repo": repo.name,
-                    "url": repo.url,
-                    "description": repo.description,
+                    "repo": repo['name'],
+                    "url": repo['html_url'],
+                    "description": repo['description'],
                     "languages": [
                         {
-                            "name": name,
-                            "icon": f"{name.lower()}-logo"
-                        } for name in repo.get_languages()
+                            "name": language['name'],
+                            "icon": f"{language['name'].lower()}-logo"
+                        } for language in requests.get(f"https://api.github.com/repos/Wishrito/{repo['name']}/languages").json()
                     ]
                 } for repo in repos
             ]
