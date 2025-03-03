@@ -16,7 +16,6 @@
         {% for project in projects %}
         <input type="hidden" name="{{ project.language.name }}" value="{{ project.language.ext }}">
         <div class="card">
-            <img src="{{  project.icon }}" alt="{{ project.repo }}">
             <h3>{{ project.repo }}</h3>
             <p>{{ project.description }}</p>
             <a href="{{ project.url }}">Voir le projet</a>
