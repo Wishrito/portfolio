@@ -1,125 +1,71 @@
-from dataclasses import dataclass, field
-from typing import List, Optional
+import json
+from pathlib import Path
 
 
-@dataclass
-class UsedLib:
-    name: str
-    desc: str
-
-
-@dataclass
-class Language:
-    id: str
-    name: str
-    icon_name: str
-    desc: str
-    used_libs: Optional[List[UsedLib]] = field(default_factory=list)
-
-    def get_projects_count(self, db) -> int:
-        return sum(1 for project in db.projects if self in project.languages)
-
-
-@dataclass
-class Software:
-    id: str
-    name: str
-    icon_name: str
-
-
-@dataclass
 class Project:
-    name: str
-    languages: List[Language]
-    repo: str
+    def __init__(self, repo_name: str, repo_url: str, repo_description: str, languages: list["Language"]):
+        self.repo_name: str = repo_name
+        self.repo_url: str = repo_url
+        self.repo_description: str = repo_description
+        self.languages: list["Language"] = languages
 
-    def get_language_count(self):
-        return len(self.languages)
-
-
-@dataclass
-class Database:
-    softwares: List[Software]
-    languages: List[Language]
-    projects: List[Project]
-
-
-# Exemple d'initialisation des données
-db = Database(
-    softwares=[
-        Software(id="vsc", name="Visual Studio Code", icon_name="vsc-logo.png")
-    ],
-    languages=[
-        Language(
-            id="py",
-            name="Python",
-            icon_name="python-logo.png",
-            desc="Développement de diverses applications en Python (voir <a href='/projects'>Projets</a>)",
-            used_libs=[
-                UsedLib(name="discord-py", desc="placeholder"),
-                UsedLib(name="python-dotenv", desc="placeholder")
+    def to_dict(self):
+        return {
+            "repo": self.repo_name,
+            "url": self.repo_url,
+            "description": self.repo_description,
+            "languages": [
+                language.to_dict() for language in self.languages
             ]
-        ),
-        Language(
-            id="js",
-            name="JavaScript",
-            icon_name="javascript-logo.png",
-            desc="Ajout d'interactivité et de dynamique aux pages web avec des scripts et des librairies."
-        ),
-        Language(
-            id="java",
-            name="Java",
-            icon_name="java-logo.png",
-            desc="Développement d'applications avec le language Java."
-        ),
-        Language(
-            id="html",
-            name="HTML/CSS",
-            icon_name="html-logo.png",
-            desc="Création de pages web avec structure sémantique et accessible."
-        ),
-        Language(
-            id="sql",
-            name="SQL",
-            icon_name="sql-logo.png",
-            desc="Manipulation de données avec système de gestion de base de données relationnelles."
-        ),
-        Language(
-            id="vb",
-            name="Visual Basic",
-            icon_name="visualbasic-logo.png",
-            desc="Développement d'applications console avec Visual Basic."
-        )
-    ],
-    projects=[
-        Project(
-            name="Bread-Chan",
-            languages=[
-                Language(
-                    id="py",
-                    name="Python",
-                    icon_name="python-logo.png",
-                    desc="Développement de diverses applications en Python (voir <a href='/projects'>Projets</a>)",
-                    used_libs=[
-                        UsedLib(name="discord-py", desc="placeholder"),
-                        UsedLib(name="python-dotenv", desc="placeholder")
-                    ]
-                ),
-                Language(
-                    id="html",
-                    name="HTML/CSS",
-                    icon_name="html-logo.png",
-                    desc="Création de pages web avec structure sémantique et accessible."
-                ),
-                Language(
-                    id="sql",
-                    name="SQL",
-                    icon_name="sql-logo.png",
-                    desc="Manipulation de données avec système de gestion de base de données relationnelles."
-                )
+        }
+
+
+class Language:
+    def __init__(self, name: str):
+        self.name = name
+        self.icon = f"{name.lower()}-logo"
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "icon": self.icon
+        }
+
+
+class Pagination:
+    def __init__(self, page: int, repos_per_page: int, total_repos: int):
+        self.page = page
+        self.repos_per_page = repos_per_page
+        self.total_repos = total_repos
+        self.total_pages = (total_repos // repos_per_page) + \
+            (1 if total_repos % repos_per_page else 0)
+
+    def to_dict(self):
+        return {
+            "page": self.page,
+            "repos_per_page": self.repos_per_page,
+            "total_repos": self.total_repos,
+            "total_pages": self.total_pages
+        }
+
+
+class ProjectData:
+    def __init__(self, projects: list[Project], pagination: Pagination):
+        self.projects: list[Project] = projects
+        self.pagination: Pagination = pagination
+
+    def to_dict(self):
+        return {
+            "projects": [
+                project.to_dict() for project in self.projects
             ],
-            repo="https://github.com/Wishrito/Bread-Chan"
-        )
-    ]
-)
-print(db.languages[0].get_projects_count(db))
+            "pagination": self.pagination.to_dict()
+        }
+
+    def save_to_file(self, filename: str):
+        with open(filename, 'w') as f:
+            json.dump(
+                self.to_dict(),
+                Path(__file__).parent / "src" / "data" / f,
+                indent=4
+            )

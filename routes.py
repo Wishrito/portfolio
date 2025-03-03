@@ -12,7 +12,6 @@ Dependencies:
     - python-dotenv: For loading environment variables.
     - requests: For making HTTP requests."""
 
-from flask import request, jsonify
 import json
 import os
 import re
@@ -20,16 +19,14 @@ import sys
 from importlib.metadata import version
 from pathlib import Path
 
-import requests
-from bs4 import BeautifulSoup
-from flask import Blueprint, jsonify, request, url_for
+from flask import Blueprint, jsonify, request
 from github import Github
 from github.GistFile import GistFile
+import requests
 
 api = Blueprint('api', __name__)
 api.template_folder = Path(__file__).parent / "pages"
 api.static_folder = Path(__file__).parent / "src"
-
 
 def parse_tuto_image(file: GistFile | str) -> list[str]:
     """
@@ -63,48 +60,30 @@ def fetch_projects():
     TOKEN = os.getenv('GITHUB_TOKEN')
     USERNAME = os.getenv('GITHUB_USERNAME')
 
-    # Récupérer les paramètres de pagination (page et repos par page)
-    # Par défaut, la page 1 si pas de paramètre
-    page = int(request.args.get('page', 1))
-    repos_per_page = 5  # Nombre de dépôts par page
+    repos_request = requests.get(
+        f"https://api.github.com/users/{USERNAME}/repos", auth={"Authorization": f"Bearer {TOKEN}"})
+    if repos_request.ok:
+        repos = repos_request.json()
+        # Préparer la réponse
+        json_repos = {
+            "projects": [
+                {
+                    "repo": repo.name,
+                    "url": repo.url,
+                    "description": repo.description,
+                    "languages": [
+                        {
+                            "name": name,
+                            "icon": f"{name.lower()}-logo"
+                        } for name in repo.get_languages()
+                    ]
+                } for repo in repos
+            ]
+        }
 
-    github = Github(TOKEN)
-    user = github.get_user(USERNAME)
-
-    # Récupérer les repos avec pagination
-    repos = user.get_repos()
-
-    # Préparer la réponse
-    json_repos = {
-        "projects": [
-            {
-                "repo": repo.name,
-                "url": repo.url,
-                "description": repo.description,
-                "languages": [
-                    {
-                        "name": name,
-                        "icon": f"{name.lower()}-logo"
-                    } for name in repo.get_languages()
-                ]
-            } for repo in repos
-        ]
-    }
-
-    # Récupérer le nombre total de repos pour le calcul des pages
-    total_repos = user.public_repos  # Nombre total de repos publics
-    total_pages = (total_repos // repos_per_page) + \
-        (1 if total_repos % repos_per_page else 0)
-
-    # Ajouter les informations de pagination
-    json_repos["pagination"] = {
-        "page": page,
-        "repos_per_page": repos_per_page,
-        "total_repos": total_repos,
-        "total_pages": total_pages
-    }
-
-    return jsonify(json_repos)
+        return jsonify(json_repos)
+    else:
+        return jsonify(repos_request.json())
 
 
 @api.get("/tools")
