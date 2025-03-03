@@ -18,7 +18,6 @@ import re
 import sys
 from importlib.metadata import version
 from pathlib import Path
-from requests_html import HTMLSession
 
 import requests
 from bs4 import BeautifulSoup
