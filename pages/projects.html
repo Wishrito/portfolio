@@ -5,20 +5,24 @@
 <div>
     <h2>Mes projets</h2>
 <section class="projects" id="projects">
+    {% if projects %}
+    <select name="language" id="" title="langages">
+        {% for langage in project.languages %}
+        <option value="{{ language.id }}">{{ language.name }}</option>
+        {% endfor %}
+    </select>
+
     <div id="py-projects">
+        {% for project in projects %}
+        <input type="hidden" name="{{ project.language.name }}" value="{{ project.language.ext }}">
         <div class="card">
-            <img src="" alt="">
-            <h3>Bread-Chan</h3>
-            <p>Bot Discord codé en Python</p>
-            <button type="button" onclick="redirect('bread-chan')">Voir le projet</button>
-        </div>
-        <div class="card">
-            <img src="" alt="">
-            <h3>Bread-Chan</h3>
-            <p>Bot Discord codé en Python</p>
-            <button type="button" onclick="redirect()">Voir le projet</button>
+            <img src="{{  project.icon }}" alt="{{ project.repo }}">
+            <h3>{{ project.repo }}</h3>
+            <p>{{ project.description }}</p>
+            <a href="{{ project.url }}">Voir le projet</a>
         </div>
     </div>
+    {% endif %}
 </section>
 </div>
 {% endblock %}

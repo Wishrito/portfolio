@@ -1,14 +1,44 @@
+import json
 import os
 from pathlib import Path
 
 import requests
-from flask import Flask, redirect, render_template, request
+from flask import Flask, redirect, render_template, request, url_for
 
 from routes import api
 
-app = Flask(__name__)
-app.template_folder = Path(__file__).parent / "pages"
-app.static_folder = Path(__file__).parent / "src"
+
+class Url:
+
+    def __init__(self):
+        """"""
+
+    @property
+    def api_gists(self):
+        return self.root_url + "api/gist_metadata"
+
+    @property
+    def api_tools(self):
+        return self.root_url + "/api/tools"
+
+    @property
+    def root_url(self):
+        url = os.getenv("VERCEL_PROJECT_PRODUCTION_URL", "default")
+        if url == "default":
+            url = request.url_root
+        else:
+            url = "https://" + url
+        return url
+
+
+class Portfolio(Flask):
+    def __init__(self, import_name, static_url_path=None, static_folder="static", static_host=None, host_matching=False, subdomain_matching=False, template_folder="templates", instance_path=None, instance_relative_config=False, root_path=None):
+        super().__init__(import_name, static_url_path, Path(__file__).parent / "src", static_host, host_matching,
+                         subdomain_matching, Path(__file__).parent / "pages", instance_path, instance_relative_config, root_path)
+        self.url = Url()
+
+
+app = Portfolio("Portfolio")
 
 app.register_blueprint(api, url_prefix="/api")
 
@@ -63,14 +93,7 @@ def about():
     Returns:
         A rendered HTML template for the 'about' page with tools data.
     """
-    root_url = os.getenv(
-        "VERCEL_PROJECT_PRODUCTION_URL", "default")
-    if root_url == "default":
-        root_url = request.url_root
-    else:
-        root_url = "https://" + root_url
-    libs_data = requests.get(
-        f"{root_url}/api/tools")
+    libs_data = requests.get(app.url.api_tools)
     return render_template('about.html', tools_data=libs_data.json())
 
 @app.get('/gists')
@@ -86,15 +109,8 @@ def get_gists():
     Returns:
         str: The rendered 'tutorials.html' template with the gists data and root URL.
     """
-    root_url = os.getenv(
-        "VERCEL_PROJECT_PRODUCTION_URL", "default")
-    if root_url == "default":
-        root_url = request.url_root
-    else:
-        root_url = "https://" + root_url
-    gists_list = requests.get(
-        f"{root_url}/api/gist_metadata")
-    return render_template('tutorials.html', gists=gists_list.json(), url=root_url)
+    gists_list = requests.get(app.url.api_gists)
+    return render_template('tutorials.html', gists=gists_list.json())
 
 
 @app.get('/gist')
@@ -113,14 +129,12 @@ def get_gist():
         requests.exceptions.RequestException: If there is an issue with the HTTP request.
     """
     gist_id = request.args.get('id')
-    root_url = os.getenv(
-        "VERCEL_PROJECT_PRODUCTION_URL", "default")
-    if root_url == "default":
-        root_url = request.url_root
-    else:
-        root_url = "https://" + root_url
+
     if not gist_id:
         return redirect('/gists')
 
-    gist_data = requests.get(f"{root_url}/api/gist_metadata", {'id': gist_id})
+    gist_data = requests.get(app.url.api_gists, {'id': gist_id})
     return render_template('tutorials.html', gist_data=gist_data.json())
+
+
+app.run(debug=True)

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Rayan TREMION - Compétences{% endblock %}
+{% block content %}
+<main>
+    <div>
+        <select name="language" id="" title="langages">
+            {% for langage in languages %}
+            <option value="{{ language.ext }}">{{ language.name }}</option>
+        </select>
+    </div>
+</main>
+{% block content %}

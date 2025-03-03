@@ -1,0 +1,68 @@
+{
+    "softwares": [
+        {
+            "id": "vsc",
+            "name": "Visual Studio Code",
+            "icon-name": "vsc-logo.png"
+        }
+    ],
+    "languages": [
+        {
+            "id": "py",
+            "name": "Python",
+            "icon-name": "python-logo.png",
+            "desc": "Développement de diverses applications en Python (voir <a href='/projects'>Projets</a>)",
+            "used_libs": [
+                {
+                    "name": "discord-py",
+                    "desc": "placeholder"
+                },
+                {
+                    "name": "python-dotenv",
+                    "desc": "placeholder"
+                }
+            ]
+        },
+        {
+            "id": "js",
+            "name": "JavaScript",
+            "icon-name": "javascript-logo.png",
+            "desc": "Ajout d'interactivité et de dynamique aux pages web avec des scripts et des librairies."
+        },
+        {
+            "id": "java",
+            "name": "Java",
+            "icon-name": "java-logo.png",
+            "desc": "Développement d'applications avec le language Java."
+        },
+        {
+            "id": "html",
+            "name": "HTML/CSS",
+            "icon-name": "html-logo.png",
+            "desc": "Création de pages web avec structure sémantique et accessible."
+        },
+        {
+            "id": "sql",
+            "name": "SQL",
+            "icon-name": "sql-logo.png",
+            "desc": "Manipulation de données avec système de gestion de base de données relationnelles."
+        },
+        {
+            "id": "vb",
+            "name": "Visual Basic",
+            "icon-name": "visualbasic-logo.png",
+            "desc": "Développement d'applications console avec Visual Basic."
+        }
+    ],
+    "projects": [
+        {
+            "name": "Bread-Chan",
+            "languages": [
+                "py",
+                "html",
+                "sql"
+            ],
+            "repo": "https://github.com/Wishrito/Bread-Chan"
+        }
+    ]
+}

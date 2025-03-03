@@ -10,7 +10,6 @@
     <meta property="og:url" content="{{ root_url }}">
     {% endif %}
     {% endblock %}
-{% block title %}Mes projets{% endblock %}
 {% block content %}
 <main>
     <div>
@@ -29,16 +28,9 @@
 <section class="skills" id="skills">
     <div class="card">
         <a href="https://fr.wikipedia.org/wiki/Hypertext_Markup_Language" target="_blank" rel="noopener"><img
-                src="{{url_for('static', filename='img/HTML5-logo.png')}}" alt="HTML" class="icon" title="HTML5"></a>
+                src="{{url_for('static', filename='img/html-logo.png')}}" alt="HTML" class="icon" title="HTML5"></a>
         <h3>HTML</h3>
         <p>Création de pages web avec structure sémantique et accessible.</p>
-    </div>
-    <div class="card">
-        <a href="https://fr.wikipedia.org/wiki/Cascading_Style_Sheet" target="_blank" rel="noopener noreferrer"><img
-                src="{{url_for('static', filename='img/CSS3-logo.png')}}" alt="CSS" class="icon" title="CSS3"></a>
-        <h3>CSS</h3>
-        <p>Mise en forme et animation d'éléments d'une page web avec styles modernes et responsives.
-        </p>
     </div>
     <div class="card">
         <a href="https://fr.wikipedia.org/wiki/JavaScript" target="_blank" rel="noopener"><img

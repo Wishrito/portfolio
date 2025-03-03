@@ -12,13 +12,17 @@ Dependencies:
     - python-dotenv: For loading environment variables.
     - requests: For making HTTP requests."""
 
+import json
 import os
 import re
 import sys
 from importlib.metadata import version
 from pathlib import Path
+from requests_html import HTMLSession
 
-from flask import Blueprint, request
+import requests
+from bs4 import BeautifulSoup
+from flask import Blueprint, jsonify, request, url_for
 from github import Github
 from github.GistFile import GistFile
 
@@ -27,7 +31,7 @@ api.template_folder = Path(__file__).parent / "pages"
 api.static_folder = Path(__file__).parent / "src"
 
 
-def parse_tuto_image(file: GistFile) -> list[str]:
+def parse_tuto_image(file: GistFile | str) -> list[str]:
     """
     Extracts image URLs from the content of a GistFile.
 
@@ -37,14 +41,59 @@ def parse_tuto_image(file: GistFile) -> list[str]:
     Returns:
         list[str]: A list of image URLs found in the content.
     """
-    texte = file.content
+    texte = None
+    if isinstance(file, GistFile):
+        texte = file.content
+    else:
+        texte = file
     pattern = r"!\[[^\]]+\]\(([^)]+)\)"  # Capture uniquement l'URL
     match = re.findall(pattern, texte)
     return match
 
 
+@api.get("/projects")
+def fetch_projects():
+    """
+    Load and return project data from a JSON file.
+    This function loads project data from a JSON file located in the static
+    directory and returns it as a Python dictionary.
+    Returns:
+        dict: A dictionary containing the project data loaded from the JSON file.
+    """
+    TOKEN = os.getenv('GITHUB_TOKEN')
+    USERNAME = os.getenv('GITHUB_USERNAME')
+    github = Github(TOKEN)
+    session = HTMLSession()
+
+    user = github.get_user(USERNAME)
+    repos = user.get_repos()
+    json_repos = {
+        "projects": [
+            {
+                "repo": repo.name,
+                "url": repo.url,
+                "description": repo.description,
+                "languages": [
+                    {
+                        name: id,
+                        "icon": f"{name.lower()}-logo"
+                    } for name, id in repo.get_languages()
+                ]
+            } for repo in repos
+        ]
+    }
+
+    json_repos["languages"] = {repo["languages"]
+                               for repo in json_repos.get("projects")}
+    for project in json_repos:
+        raw_html = session.get(json_repos['url'])
+        meta_tag = raw_html.html.find("meta[property='og:image']", first=True)
+        project['icon'] = meta_tag.attrs.get('content')
+    return jsonify(repos)
+
+
 @api.get("/tools")
-def get_env_metadata():
+def fetch_env_metadata():
     """
     Retrieves metadata about the current Python environment and used libraries.
     Returns:
@@ -67,7 +116,7 @@ def get_env_metadata():
 
 
 @api.get('/gist_metadata')
-def get_gist_metadata():
+def fetch_gist_metadata():
     """
     Fetches metadata for GitHub gists of a user.
     This function retrieves the metadata of GitHub gists for a user specified by the 
@@ -90,9 +139,9 @@ def get_gist_metadata():
     """
     TOKEN = os.getenv('GITHUB_TOKEN')
     USERNAME = os.getenv('GITHUB_USERNAME')
-    g = Github(TOKEN)
+    github = Github(TOKEN)
 
-    user = g.get_user(USERNAME)
+    user = github.get_user(USERNAME)
     gists = user.get_gists()
 
     if "id" in request.args:
@@ -141,4 +190,4 @@ def get_gist_metadata():
             gist['title'] = str(gist['files'][0]['name'].removesuffix(
                 '.md').title().replace('_', ' '))
         return gists_list
-    g.close()
+    github.close()
