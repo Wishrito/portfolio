@@ -53,18 +53,29 @@ def parse_tuto_image(file: GistFile | str) -> list[str]:
 @api.get("/projects")
 def fetch_projects():
     """
-    Load and return project data from a JSON file.
-    This function loads project data from a JSON file located in the static
-    directory and returns it as a Python dictionary.
+    Load and return project data from GitHub with pagination.
+    This function loads project data from GitHub and supports pagination
+    through the 'page' query parameter.
     Returns:
-        dict: A dictionary containing the project data loaded from the JSON file.
+        dict: A dictionary containing the project data loaded from GitHub.
     """
     TOKEN = os.getenv('GITHUB_TOKEN')
     USERNAME = os.getenv('GITHUB_USERNAME')
-    github = Github(TOKEN)
 
+    # Récupérer les paramètres de pagination (page et repos par page)
+    # Par défaut, la page 1 si pas de paramètre
+    page = int(request.args.get('page', 1))
+    repos_per_page = 30  # Nombre de dépôts par page
+
+    github = Github(TOKEN)
     user = github.get_user(USERNAME)
+
+    # Récupérer les repos pour la page demandée
     repos = user.get_repos()
+    repos = repos[(page-1) * repos_per_page: page *
+                  repos_per_page]  # Pagination
+
+    # Préparer la réponse
     json_repos = {
         "projects": [
             {
@@ -73,17 +84,24 @@ def fetch_projects():
                 "description": repo.description,
                 "languages": [
                     {
-                        name: id,
+                        "name": name,
                         "icon": f"{name.lower()}-logo"
-                    } for id, name in enumerate(repo.get_languages())
+                    } for name in repo.get_languages()
                 ]
             } for repo in repos
         ]
     }
 
-    json_repos["languages"] = {repo["languages"]
-                               for repo in json_repos.get("projects")}
-    return jsonify(repos)
+    # Ajout des informations de pagination
+    json_repos["pagination"] = {
+        "page": page,
+        "repos_per_page": repos_per_page,
+        # Total des repos pour calculer le nombre total de pages
+        "total_repos": repos.totalCount,
+        "total_pages": (repos.totalCount // repos_per_page) + (1 if repos.totalCount % repos_per_page else 0)
+    }
+
+    return jsonify(json_repos)
 
 
 @api.get("/tools")
