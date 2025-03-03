@@ -75,7 +75,7 @@ def fetch_projects():
                     {
                         name: id,
                         "icon": f"{name.lower()}-logo"
-                    } for name, id in repo.get_languages()
+                    } for id, name in enumerate(repo.get_languages())
                 ]
             } for repo in repos
         ]
