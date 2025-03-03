@@ -60,8 +60,12 @@ def fetch_projects():
     TOKEN = os.getenv('GITHUB_TOKEN')
     USERNAME = os.getenv('GITHUB_USERNAME')
 
+
     repos_request = requests.get(
-        f"https://api.github.com/users/{USERNAME}/repos", auth={"Authorization": f"Bearer {TOKEN}"})
+        f"https://api.github.com/users/{USERNAME}/repos",
+        auth={"Authorization": f"Bearer {TOKEN}"},
+        timeout=10  # Ajout d'un délai d'attente de 10 secondes
+    )
     if repos_request.ok:
         repos = repos_request.json()
         # Préparer la réponse
@@ -73,8 +77,8 @@ def fetch_projects():
                     "description": repo['description'],
                     "languages": [
                         {
-                            "name": language['name'],
-                            "icon": f"{language['name'].lower()}-logo"
+                            "name": next(iter(enumerate(language)))[0],
+                            "icon": f"{next(iter(enumerate(language)))[0].lower()}-logo"
                         } for language in requests.get(f"https://api.github.com/repos/Wishrito/{repo['name']}/languages").json()
                     ]
                 } for repo in repos
@@ -82,6 +86,7 @@ def fetch_projects():
         }
 
         return jsonify(json_repos)
+
     else:
         return jsonify(repos_request.json())
 
