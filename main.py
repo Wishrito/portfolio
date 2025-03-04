@@ -15,11 +15,11 @@ class Url:
 
     @property
     def api_projects(self):
-        return self.root_url + "api/projects"
+        return self.root_url + "/api/projects"
 
     @property
     def api_gists(self):
-        return self.root_url + "api/gist_metadata"
+        return self.root_url + "/api/gist_metadata"
 
     @property
     def api_tools(self):
