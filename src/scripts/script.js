@@ -1,4 +1,4 @@
-document.getElementById("languages").addEventListener("change", function () {
+document.getElementById("language_select").addEventListener("change", function () {
     let selectedLanguage = this.value;
     let projects = document.getElementsByClassName("card");
 
