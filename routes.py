@@ -77,10 +77,10 @@ def fetch_projects():
                     "description": repo['description'],
                     "languages": [
                         {
-                            "name": next(iter(enumerate(language))),
-                            "icon": f"{str(next(iter(enumerate(language)))).lower()}-logo"
+                            "name": next(iter(enumerate(language)))[1],
+                            "icon": f"{str(next(iter(enumerate(language)))[1]).lower()}-logo"
                             # Ajout d'un délai d'attente de 10 secondes
-                        } for language in requests.get(f"https://api.github.com/repos/Wishrito/{repo['name']}/languages", timeout=10).json()
+                        } for language in enumerate(requests.get(f"https://api.github.com/repos/Wishrito/{repo['name']}/languages", timeout=10).json())
                     ]
                 } for repo in repos
             ]
