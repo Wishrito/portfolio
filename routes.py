@@ -34,45 +34,45 @@ async def fetch_languages(session: aiohttp.ClientSession, repo_name: str):
         return await response.json()
 
 
-def lighten_color(hex_code: str, lightness: int = 50) -> str:
-    """
-    Éclaire la couleur hexadécimale en augmentant les valeurs de chaque composant RGB.
+# def lighten_color(hex_code: str, lightness: int = 50) -> str:
+#     """
+#     Éclaire la couleur hexadécimale en augmentant les valeurs de chaque composant RGB.
     
-    Args:
-        hex_code (str): Le code hexadécimal à éclaircir.
-        lightness (int): Le facteur d'éclaircissement (de 0 à 255).
+#     Args:
+#         hex_code (str): Le code hexadécimal à éclaircir.
+#         lightness (int): Le facteur d'éclaircissement (de 0 à 255).
         
-    Returns:
-        str: Le code hexadécimal éclairci.
-    """
-    # Extraire les composantes RGB du code hexadécimal
-    r, g, b = int(hex_code[:2], 16), int(
-        hex_code[2:4], 16), int(hex_code[4:6], 16)
+#     Returns:
+#         str: Le code hexadécimal éclairci.
+#     """
+#     # Extraire les composantes RGB du code hexadécimal
+#     r, g, b = int(hex_code[:2], 16), int(
+#         hex_code[2:4], 16), int(hex_code[4:6], 16)
 
-    # Appliquer l'éclaircissement
-    r = min(255, r + lightness)
-    g = min(255, g + lightness)
-    b = min(255, b + lightness)
+#     # Appliquer l'éclaircissement
+#     r = min(255, r + lightness)
+#     g = min(255, g + lightness)
+#     b = min(255, b + lightness)
 
-    # Retourner le code hexadécimal ajusté
-    return f"{r:02x}{g:02x}{b:02x}"
+#     # Retourner le code hexadécimal ajusté
+#     return f"{r:02x}{g:02x}{b:02x}"
 
 
-def convert_to_hex(texte: str, lightness: int = 50) -> str:
-    """
-    Convertit un texte en code hexadécimal de 6 caractères et l'éclaire.
+# def convert_to_hex(texte: str, lightness: int = 50) -> str:
+#     """
+#     Convertit un texte en code hexadécimal de 6 caractères et l'éclaire.
     
-    Args:
-        texte (str): Le texte à convertir.
-        lightness (int): Le facteur d'éclaircissement de la couleur (de 0 à 255).
+#     Args:
+#         texte (str): Le texte à convertir.
+#         lightness (int): Le facteur d'éclaircissement de la couleur (de 0 à 255).
         
-    Returns:
-        str: Le code hexadécimal éclairci.
-    """
-    hex_code = ''.join(format(ord(char), '02x') for char in texte)
-    # On ne garde que les 6 premiers caractères pour le code hex
-    hex_code = hex_code[:6]
-    return lighten_color(hex_code, lightness)
+#     Returns:
+#         str: Le code hexadécimal éclairci.
+#     """
+#     hex_code = ''.join(format(ord(char), '02x') for char in texte)
+#     # On ne garde que les 6 premiers caractères pour le code hex
+#     hex_code = hex_code[:6]
+#     return lighten_color(hex_code, lightness)
 
 
 def parse_tuto_image(file: GistFile | str) -> list[str]:
@@ -148,15 +148,15 @@ async def fetch_projects():
 
             json_repos['languages'] = list(languages_set)
 
-            # Déterminer la langue dominante et affecter la couleur
-            for project in json_repos['projects']:
-                lang_name = [language['name']
-                             for language in project['languages']]
-                lang_use_rate = [language['use_rate']
-                                 for language in project['languages']]
-                max_val_couple = max(
-                    zip(lang_name, lang_use_rate), key=lambda x: x[1], default=('', 0))
-                project['hex_color'] = convert_to_hex(max_val_couple[0])
+            # # Déterminer la langue dominante et affecter la couleur
+            # for project in json_repos['projects']:
+            #     lang_name = [language['name']
+            #                  for language in project['languages']]
+            #     lang_use_rate = [language['use_rate']
+            #                      for language in project['languages']]
+            #     max_val_couple = max(
+            #         zip(lang_name, lang_use_rate), key=lambda x: x[1], default=('', 0))
+            #     project['hex_color'] = convert_to_hex(max_val_couple[0])
 
             return jsonify(json_repos)
 
