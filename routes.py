@@ -18,8 +18,8 @@ import re
 import sys
 from importlib.metadata import version
 from pathlib import Path
-import aiohttp
 
+import aiohttp
 from flask import Blueprint, jsonify, request
 from github import Github
 from github.GistFile import GistFile
@@ -37,11 +37,11 @@ async def fetch_languages(session: aiohttp.ClientSession, repo_name: str):
 # def lighten_color(hex_code: str, lightness: int = 50) -> str:
 #     """
 #     Éclaire la couleur hexadécimale en augmentant les valeurs de chaque composant RGB.
-    
+
 #     Args:
 #         hex_code (str): Le code hexadécimal à éclaircir.
 #         lightness (int): Le facteur d'éclaircissement (de 0 à 255).
-        
+
 #     Returns:
 #         str: Le code hexadécimal éclairci.
 #     """
@@ -110,8 +110,12 @@ async def fetch_projects():
             headers={"Authorization": f"Bearer {TOKEN}"},
             timeout=10
         )
+
         if repos_request.status in [403, 429]:
-            return "Désolé, j'ai un peu de mal à suivre, il y a beaucoup de trafic 😅 réessaie dans quelques minutes, s'il te plaît", repos_request.status
+            return {
+                "response": "Désolé, j'ai un peu de mal à suivre, il y a beaucoup de trafic 😅 réessaie dans quelques minutes, s'il te plaît"
+            }, repos_request.status
+
         if repos_request.ok:
             repos = await repos_request.json()
 
