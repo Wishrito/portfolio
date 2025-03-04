@@ -13,7 +13,7 @@
         {% endfor %}
     </select>
     <section class="projects" id="projects">
-        {% for id, project in enumerate(data.projects) %}
+        {% for project in data.projects %}
         <div class="card" data-languages="{{ project.string_languages }}">
             <h3>{{ project.repo }}</h3>
             {% if project.description %}
