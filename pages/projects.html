@@ -16,7 +16,11 @@
             {% for project in data.projects %}
             <div class="card">
                 <h3>{{ project.repo }}</h3>
+                {% if project.description %}
                 <p>{{ project.description }}</p>
+                {% else %}
+                <p>Aucune description fournie</p>
+                {% endif %}
                 <a href="{{ project.url }}">Voir le projet</a>
                 <div>
                     <h4>Langages utilisés :</h4>

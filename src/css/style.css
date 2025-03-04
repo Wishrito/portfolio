@@ -1,167 +1,163 @@
-/* Styles de base */
 :root {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
 }
+
 body {
-    font-family: Arial, sans-serif;
+  font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
-        color: #333;
+    color: #333;
 }
 
-h1,
-h2,
+h1 {
+  color: #444;
+}
+
+h2 {
+  color: #444;
+}
 h3 {
-    color: #444;
+  color: #444;
 }
 
 p {
-    line-height: 1.6;
+  line-height: 1.6;
 }
 
-/* Barre de navigation */
 .navbar {
-    background-color: #333;
+  background-color: #333;
     overflow: hidden;
 }
-
 .navbar ul {
-    list-style-type: none;
+  list-style-type: none;
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
 }
-
 .navbar ul li {
-    margin: 0 15px;
+  margin: 0 15px;
 }
-
 .navbar ul li a {
-    color: #fff;
+  color: #fff;
     text-decoration: none;
     padding: 14px 20px;
-        display: block;
+    display: block;
 }
 .navbar ul li a:hover {
-    background-color: #575757;
+  background-color: #575757;
     border-radius: 5px;
 }
-/* Section principale */
+
 #content {
-    padding: 20px;
+  padding: 20px;
     max-width: 1200px;
-        margin: 20px auto;
-        background-color: #fff;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-/* Pied de page */
+    margin: 20px auto;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
 .pageFooter {
-    background-color: #333;
+  background-color: #333;
     color: #fff;
     text-align: center;
     padding: 10px 0;
-        position: fixed;
-        width: 100%;
-        bottom: 0;
-    }
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+  }
 .pageFooter a {
-    color: #fff;
+  color: #fff;
     text-decoration: none;
     margin: 0 10px;
 }
-
 .pageFooter a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
-
 .pageFooter span {
-    margin: 0 5px;
+  margin: 0 5px;
     color: #bbb;
 }
+
 main {
-    text-align: center;
+  text-align: center;
     padding: 20px;
 }
 
-/* Styles pour les sections */
-.skills,
-.projects {
-    display: flex;
-    flex-wrap: wrap;
-    /* Permet aux cartes de passer à la ligne si nécessaire */
-        gap: 16px;
-        /* Espacement entre les cartes */
-    justify-content: center;
-    /* Centre les cartes horizontalement */
-        align-items: center;
-        /* Aligne les cartes verticalement */
-    padding: 20px;
+.skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
     background-color: #fff;
-        margin: 20px auto;
-        max-width: 1200px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-.skills h2,
-.projects h2 {
-    border-bottom: 2px solid #444;
+    margin: 20px auto;
+    max-width: 1200px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-bottom: 2px solid #444;
     padding-bottom: 10px;
     margin-bottom: 20px;
 }
 
-/* Styles pour les cartes */
+.projects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background-color: #fff;
+  margin: 20px auto;
+  max-width: 1200px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-bottom: 2px solid #444;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+.projects .card img {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+
 .card {
-    background-color: #fff;
+  background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin: 20px auto;
-    /* Centrer les cartes */
-    padding: 20px;
+  padding: 20px;
     text-align: center;
     transition: transform 0.2s;
-        max-width: 300px;
-        /* Définir une largeur maximale */
-    }
+    max-width: 300px;
+}
 .card:hover {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
-
-.card img.icon {
-    width: 100px;
-    height: 100px;
-    margin-bottom: 10px;
+.card .icon {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 10px;
 }
-
-.card h3 {
-    margin: 10px 0;
-}
-
 .card p {
-    font-size: 0.9em;
+  font-size: 0.9em;
     color: #666;
 }
-
 .card a {
-    display: inline-block;
+  display: inline-block;
     margin-top: 10px;
     color: #007BFF;
     text-decoration: none;
 }
 .card a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
-/* Styles pour les images */
-div#photo {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    margin-top: 20px;
+#photo {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  margin-top: 20px;
 }
-.projects .card img {
-    width: 100%;
-    height: auto;
-    border-radius: 5px;
-}
+/*# sourceMappingURL=style.css.map */

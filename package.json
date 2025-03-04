@@ -1,0 +1,10 @@
+{
+    "name": "mon-portfolio",
+    "version": "0.1.0",
+    "scripts": {
+        "build-css": "sass src/scss/style.scss src/css/style.css"
+    },
+    "devDependencies": {
+        "sass": "^1.85.1"
+    }
+}

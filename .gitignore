@@ -173,6 +173,12 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
+# node-modules
+node_modules/
+
+*.map
+
+
 # misc
 .*/
 *.zip
