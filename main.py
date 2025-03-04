@@ -140,3 +140,6 @@ def get_gist():
 
     gist_data = requests.get(app.url.api_gists, {'id': gist_id})
     return render_template('tutorials.html', gist_data=gist_data.json())
+
+
+app.run(debug=True)

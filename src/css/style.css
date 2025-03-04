@@ -4,7 +4,7 @@
 
 body {
   font-family: Arial, sans-serif;
-    margin: 0;
+  margin: 0;
     padding: 0;
     background-color: #f4f4f4;
     color: #333;
@@ -27,11 +27,11 @@ p {
 
 .navbar {
   background-color: #333;
-    overflow: hidden;
+  overflow: hidden;
 }
 .navbar ul {
   list-style-type: none;
-    margin: 0;
+  margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
@@ -41,18 +41,45 @@ p {
 }
 .navbar ul li a {
   color: #fff;
-    text-decoration: none;
+  text-decoration: none;
     padding: 14px 20px;
     display: block;
 }
 .navbar ul li a:hover {
   background-color: #575757;
-    border-radius: 5px;
+  border-radius: 5px;
 }
 
+/* Styles pour le menu de sélection */
+select#language {
+  width: 200px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  color: #333;
+  font-size: 16px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="gray" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+}
+
+select#language:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  outline: none;
+}
+
+option {
+  padding: 10px;
+}
 #content {
   padding: 20px;
-    max-width: 1200px;
+  max-width: 1200px;
     margin: 20px auto;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -60,7 +87,7 @@ p {
 
 .pageFooter {
   background-color: #333;
-    color: #fff;
+  color: #fff;
     text-align: center;
     padding: 10px 0;
     position: fixed;
@@ -69,7 +96,7 @@ p {
   }
 .pageFooter a {
   color: #fff;
-    text-decoration: none;
+  text-decoration: none;
     margin: 0 10px;
 }
 .pageFooter a:hover {
@@ -77,12 +104,12 @@ p {
 }
 .pageFooter span {
   margin: 0 5px;
-    color: #bbb;
+  color: #bbb;
 }
 
 main {
   text-align: center;
-    padding: 20px;
+  padding: 20px;
 }
 
 .skills {
@@ -92,12 +119,12 @@ main {
   justify-content: center;
   align-items: center;
   padding: 20px;
-    background-color: #fff;
+  background-color: #fff;
     margin: 20px auto;
     max-width: 1200px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border-bottom: 2px solid #444;
-    padding-bottom: 10px;
+  padding-bottom: 10px;
     margin-bottom: 20px;
 }
 
@@ -124,12 +151,12 @@ main {
 
 .card {
   background-color: #fff;
-    border: 1px solid #ddd;
+  border: 1px solid #ddd;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin: 20px auto;
   padding: 20px;
-    text-align: center;
+  text-align: center;
     transition: transform 0.2s;
     max-width: 300px;
 }
@@ -143,12 +170,12 @@ main {
 }
 .card p {
   font-size: 0.9em;
-    color: #666;
+  color: #666;
 }
 .card a {
   display: inline-block;
-    margin-top: 10px;
-    color: #007BFF;
+  margin-top: 10px;
+  color: #007bff;
     text-decoration: none;
 }
 .card a:hover {

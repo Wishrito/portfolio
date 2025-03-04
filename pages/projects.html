@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 {% block title %}Mes projets{% endblock %}
+<script src="{{ url_for('static', filename='css/script.js') }}"></script>
 {% block content %}
 <!-- Section des projets -->
 <div>
     <h2>Mes projets</h2>
+    {% if data %}
+    <select name="language" id="language_select" title="langages">
+        <option value="all" selected>Tous</option>
+        {% for language in data.languages %}
+        <option value="{{ language }}">{{ language }}</option>
+        {% endfor %}
+    </select>
     <section class="projects" id="projects">
-        {% if data %}
-        <select name="language" id="language" title="langages">
-            {% for language in data.languages %}
-            <option value="{{ language }}">{{ language }}</option>
-            {% endfor %}
-        </select>
-
-        <div id="py-projects">
-            {% for project in data.projects %}
-            <div class="card">
+        {% for id, project in enumerate(data.projects) %}
+        <div class="card" data-languages="{{ ','.join([lang.name for lang in project.languages]) }}">
                 <h3>{{ project.repo }}</h3>
                 {% if project.description %}
                 <p>{{ project.description }}</p>
