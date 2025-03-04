@@ -77,6 +77,57 @@ select#language:focus {
 option {
   padding: 10px;
 }
+/* Style pour l'en-tête (header) */
+header {
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  border-bottom: 2px solid #3498db;
+}
+
+header h3 {
+  color: #2c3e50;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Style pour le paragraphe de description */
+p {
+  font-size: 16px;
+  color: #7f8c8d;
+  line-height: 1.6;
+  margin: 10px 0;
+}
+
+/* Style lorsque la description n'est pas fournie */
+p:empty {
+  font-style: italic;
+  color: #bdc3c7;
+}
+
+/* Style pour la section des langages utilisés */
+div>h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #3498db;
+  margin-top: 20px;
+}
+
+/* Liste des langages utilisés */
+ul {
+  padding-left: 20px;
+}
+
+ul li {
+  font-size: 16px;
+  color: #2c3e50;
+  list-style-type: disc;
+  margin-bottom: 5px;
+}
+
+ul li::marker {
+  color: #3498db;
+}
 #content {
   padding: 20px;
   max-width: 1200px;
@@ -159,6 +210,7 @@ main {
   text-align: center;
     transition: transform 0.2s;
     max-width: 300px;
+  font-family: Arial, sans-serif;
 }
 .card:hover {
   transform: scale(1.05);
@@ -187,4 +239,3 @@ main {
   border-radius: 50%;
   margin-top: 20px;
 }
-/*# sourceMappingURL=style.css.map */
