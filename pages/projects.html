@@ -15,7 +15,7 @@
     <section class="projects" id="projects">
         {% for project in data.projects %}
         <div class="card" data-languages="{{ project.string_languages }}">
-            <header style="background-color: {{ project.hex_color }};">
+            <header style="width:fit-content; background-color: #{{ project.hex_color }};">
                 <h3>{{ project.repo }}</h3>
             </header>
             {% if project.description %}
