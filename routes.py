@@ -12,17 +12,16 @@ Dependencies:
     - python-dotenv: For loading environment variables.
     - requests: For making HTTP requests."""
 
-import json
 import os
 import re
 import sys
 from importlib.metadata import version
 from pathlib import Path
 
+import requests
 from flask import Blueprint, jsonify, request
 from github import Github
 from github.GistFile import GistFile
-import requests
 
 api = Blueprint('api', __name__)
 api.template_folder = Path(__file__).parent / "pages"
@@ -82,7 +81,7 @@ def fetch_projects():
                             # Ajout d'un délai d'attente de 10 secondes
                         } for language in enumerate(requests.get(f"https://api.github.com/repos/Wishrito/{repo['name']}/languages", timeout=5).json())
                     ]
-                } for repo in repos
+                } for repo in repos if repo['fork'] is False
             ]
         }
 

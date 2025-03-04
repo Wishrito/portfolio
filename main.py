@@ -1,9 +1,8 @@
-import json
 import os
 from pathlib import Path
 
 import requests
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request
 
 from routes import api
 
@@ -82,7 +81,7 @@ def projects():
     """
 
     projects_data = requests.get(app.url.api_projects)
-    return render_template("projects.html", projects=projects_data.json())
+    return render_template("projects.html", data=projects_data.json())
 
 
 @app.get('/about')
