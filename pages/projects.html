@@ -14,9 +14,9 @@
         <option value="{{ language }}">{{ language.title() }}</option>
         {% endfor %}
     </select>
-    <section class="projects columns" id="projects">
+    <section class="projects" id="projects">
         {% for project in data.projects %}
-        <div class="card is-one-quarter" data-languages="{{ project.string_languages }}">
+        <div class="card" data-languages="{{ project.string_languages }}">
             <header>
                 <h3>{{ project.repo }}</h3>
             </header>
