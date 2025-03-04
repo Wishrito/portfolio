@@ -89,6 +89,7 @@ def fetch_projects():
         for project in json_repos['projects']:
             json_repos['languages'] = {lang['name']
                                        for lang in project['languages']}
+        json_repos['languages'] = list(json_repos['languages'])
         return jsonify(json_repos)
     return jsonify(repos_request.json())
 
