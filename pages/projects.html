@@ -14,14 +14,12 @@
     </select>
     <section class="projects" id="projects">
         {% for id, project in enumerate(data.projects) %}
-        {% for lang in project.languages %}
-        {{ lang.name }}
         <div class="card" data-languages="{{ project.string_languages }}">
             <h3>{{ project.repo }}</h3>
             {% if project.description %}
-                <p>{{ project.description }}</p>
+            <p>{{ project.description }}</p>
             {% else %}
-                <p>Aucune description fournie</p>
+            <p>Aucune description fournie</p>
             {% endif %}
             <a href="{{ project.url }}">Voir le projet</a>
             <div>
@@ -32,12 +30,11 @@
                     {% endfor %}
                 </ul>
             </div>
-            </div>
-            {% endfor %}
-            </div>
-            {% else %}
-            <p>Aucun projet trouvé.</p>
-        {% endif %}
+        </div>
+        {% endfor %}
     </section>
+    {% else %}
+    <p>Aucun projet trouvé.</p>
+    {% endif %}
 </div>
 {% endblock %}
