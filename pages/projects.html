@@ -8,17 +8,17 @@
     {% if projects %}
     <select name="language" id="" title="langages">
         {% for language in projects.languages %}
-        <option value="{{ language.name }}">{{ language.name }}</option>
+        <option value="{{ language[name] }}">{{ language[name] }}</option>
         {% endfor %}
     </select>
 
     <div id="py-projects">
         {% for project in projects.projects %}
-        <input type="hidden" name="{{ project.language.name }}" value="{{ project.language.name }}">
+        <input type="hidden" name="{{ project[language][name] }}" value="{{ project[language][name] }}">
         <div class="card">
-            <h3>{{ project.repo }}</h3>
-            <p>{{ project.description }}</p>
-            <a href="{{ project.url }}">Voir le projet</a>
+            <h3>{{ project[repo] }}</h3>
+            <p>{{ project[description] }}</p>
+            <a href="{{ project[url] }}">Voir le projet</a>
         </div>
         {% endfor %}
     </div>
