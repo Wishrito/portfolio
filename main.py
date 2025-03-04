@@ -144,5 +144,3 @@ async def get_gist():
     async with aiohttp.ClientSession() as session:
         gist_data = await session.get(app.url.api_gists, params={'id': gist_id})
     return render_template('tutorials.html', gist_data=gist_data.json())
-
-app.run(debug=True)
