@@ -11,7 +11,7 @@
     <select name="language" id="language_select" title="langages">
         <option value="all" selected>Tous</option>
         {% for language in data.languages %}
-        <option value="{{ language }}">{{ language }}</option>
+        <option value="{{ language }}">{{ language.title() }}</option>
         {% endfor %}
     </select>
     <section class="projects" id="projects">
