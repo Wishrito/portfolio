@@ -110,6 +110,8 @@ async def fetch_projects():
             headers={"Authorization": f"Bearer {TOKEN}"},
             timeout=10
         )
+        if repos_request.status in [403, 429]:
+            return "Désolé, j'ai un peu de mal à suivre, il y a beaucoup de trafic 😅 réessaie dans quelques minutes, s'il te plaît", repos_request.status
         if repos_request.ok:
             repos = await repos_request.json()
 

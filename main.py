@@ -58,8 +58,13 @@ def page_not_found(error):
     Returns:
         A rendered template for the 404 error page.
     """
-    return render_template("404.html")
+    return render_template("404.html", e=error)
 
+
+@app.errorhandler(403)
+def forbidden(error):
+
+    return render_template("403.html", e=error)
 
 @app.get('/')
 def home():
