@@ -27,6 +27,7 @@ api = Blueprint('api', __name__)
 api.template_folder = Path(__file__).parent / "pages"
 api.static_folder = Path(__file__).parent / "src"
 
+
 def parse_tuto_image(file: GistFile | str) -> list[str]:
     """
     Extracts image URLs from the content of a GistFile.
@@ -59,7 +60,6 @@ def fetch_projects():
     TOKEN = os.getenv('GITHUB_TOKEN')
     USERNAME = os.getenv('GITHUB_USERNAME')
 
-
     repos_request = requests.get(
         f"https://api.github.com/users/{USERNAME}/repos",
         headers={"Authorization": f"Bearer {TOKEN}"},
@@ -74,6 +74,7 @@ def fetch_projects():
                     "repo": repo['name'],
                     "url": repo['html_url'],
                     "description": repo['description'],
+                    "string_languages": str([language[1] for language in enumerate(requests.get(f"https://api.github.com/repos/Wishrito/{repo['name']}/languages", timeout=5).json())]),
                     "languages": [
                         {
                             "name": language[1],

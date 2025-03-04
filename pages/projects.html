@@ -14,7 +14,9 @@
     </select>
     <section class="projects" id="projects">
         {% for id, project in enumerate(data.projects) %}
-        <div class="card" data-languages="{{ ','.join([lang.name for lang in project.languages]) }}">
+        {% for lang in project.languages %}
+        {{ lang.name }}
+        <div class="card" data-languages="{{ project.string_languages }}">
                 <h3>{{ project.repo }}</h3>
                 {% if project.description %}
                 <p>{{ project.description }}</p>
