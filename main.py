@@ -82,7 +82,7 @@ async def projects():
     """
     async with aiohttp.ClientSession() as session:
         projects_data = await session.get(app.url.api_projects)
-    return render_template("projects.html", data=await projects_data.json())
+        return render_template("projects.html", data=await projects_data.json())
 
 
 @app.get('/about')
@@ -101,7 +101,7 @@ async def about():
     """
     async with aiohttp.ClientSession() as session:
         libs_data = await session.get(app.url.api_tools)
-    return render_template('about.html', tools_data=libs_data.json())
+        return render_template('about.html', tools_data=await libs_data.json())
 
 @app.get('/gists')
 async def get_gists():
@@ -118,7 +118,7 @@ async def get_gists():
     """
     async with aiohttp.ClientSession() as session:
         gists_list = await session.get(app.url.api_gists)
-    return render_template('tutorials.html', gists=gists_list.json())
+        return render_template('tutorials.html', gists=await gists_list.json())
 
 
 @app.get('/gist')
@@ -143,4 +143,4 @@ async def get_gist():
 
     async with aiohttp.ClientSession() as session:
         gist_data = await session.get(app.url.api_gists, params={'id': gist_id})
-    return render_template('tutorials.html', gist_data=gist_data.json())
+        return render_template('tutorials.html', gist_data=await gist_data.json())

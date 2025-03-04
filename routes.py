@@ -133,7 +133,7 @@ async def fetch_projects():
 
             return jsonify(json_repos)
 
-        return jsonify(repos_request.json())
+        return jsonify(await repos_request.json())
 
 
 @api.get("/tools")
