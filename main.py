@@ -82,7 +82,7 @@ def projects():
     """
 
     projects_data = requests.get(app.url.api_projects)
-    return render_template("projects.html")
+    return render_template("projects.html", projects=projects_data)
 
 
 @app.get('/about')
