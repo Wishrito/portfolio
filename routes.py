@@ -61,11 +61,11 @@ async def fetch_languages(session: aiohttp.ClientSession, repo_name: str):
 # def convert_to_hex(texte: str, lightness: int = 50) -> str:
 #     """
 #     Convertit un texte en code hexadécimal de 6 caractères et l'éclaire.
-    
+
 #     Args:
 #         texte (str): Le texte à convertir.
 #         lightness (int): Le facteur d'éclaircissement de la couleur (de 0 à 255).
-        
+
 #     Returns:
 #         str: Le code hexadécimal éclairci.
 #     """
@@ -95,7 +95,7 @@ def parse_tuto_image(file: GistFile | str) -> list[str]:
     return match
 
 
-# Fonction principale pour récupérer les projets avec pagination
+
 @api.get("/projects")
 async def fetch_projects():
     """
