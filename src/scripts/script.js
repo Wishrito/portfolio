@@ -3,7 +3,7 @@ document.getElementById("languages").addEventListener("change", function () {
     let projects = document.getElementsByClassName("card");
 
     for (let project of projects) {
-        let languages = project.dataset.languages.split(',');
+        let languages = project.dataset.languages.split(', ');
         if (selectedLanguage === "all") {
             project.style.display = "block";
         } else if (languages.includes(selectedLanguage)) {
