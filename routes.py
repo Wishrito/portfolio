@@ -143,7 +143,7 @@ async def fetch_projects():
             # Extraire les langues uniques
             languages_set = set()
             for project in json_repos['projects']:
-                languages_set.update(lang['name']
+                languages_set.update(lang['name'].lower()
                                      for lang in project['languages'])
 
             json_repos['languages'] = list(languages_set)
