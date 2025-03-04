@@ -14,6 +14,10 @@ class Url:
         """"""
 
     @property
+    def api_projects(self):
+        return self.root_url + "api/projects"
+
+    @property
     def api_gists(self):
         return self.root_url + "api/gist_metadata"
 
@@ -76,6 +80,8 @@ def projects():
     Returns:
         A rendered HTML template for the projects page.
     """
+
+    projects_data = requests.get(app.url.api_projects)
     return render_template("projects.html")
 
 
