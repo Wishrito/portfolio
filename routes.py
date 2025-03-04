@@ -74,7 +74,7 @@ def fetch_projects():
                     "repo": repo['name'],
                     "url": repo['html_url'],
                     "description": repo['description'],
-                    "string_languages": str([language[1] for language in enumerate(requests.get(f"https://api.github.com/repos/Wishrito/{repo['name']}/languages", timeout=5).json())]),
+                    "string_languages": str([language[1] for language in enumerate(requests.get(f"https://api.github.com/repos/Wishrito/{repo['name']}/languages", timeout=5).json())]).removeprefix('[').removesuffix(']'),
                     "languages": [
                         {
                             "name": language[1],

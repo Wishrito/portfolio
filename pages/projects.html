@@ -17,27 +17,27 @@
         {% for lang in project.languages %}
         {{ lang.name }}
         <div class="card" data-languages="{{ project.string_languages }}">
-                <h3>{{ project.repo }}</h3>
-                {% if project.description %}
+            <h3>{{ project.repo }}</h3>
+            {% if project.description %}
                 <p>{{ project.description }}</p>
-                {% else %}
+            {% else %}
                 <p>Aucune description fournie</p>
-                {% endif %}
-                <a href="{{ project.url }}">Voir le projet</a>
-                <div>
-                    <h4>Langages utilisés :</h4>
-                    <ul>
-                        {% for lang in project.languages %}
-                        <li>{{ lang.name }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                </div>
-                {% endfor %}
-                </div>
-        {% else %}
-        <p>Aucun projet trouvé.</p>
+            {% endif %}
+            <a href="{{ project.url }}">Voir le projet</a>
+            <div>
+                <h4>Langages utilisés :</h4>
+                <ul>
+                    {% for lang in project.languages %}
+                    <li>{{ lang.name }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            </div>
+            {% endfor %}
+            </div>
+            {% else %}
+            <p>Aucun projet trouvé.</p>
         {% endif %}
-        </section>
+    </section>
 </div>
 {% endblock %}
