@@ -34,18 +34,45 @@ async def fetch_languages(session: aiohttp.ClientSession, repo_name: str):
         return await response.json()
 
 
-def convert_to_hex(texte: str) -> str:
+def lighten_color(hex_code: str, lightness: int = 50) -> str:
     """
-    Convertit un texte en code hexadécimal de 6 caractères.
+    Éclaire la couleur hexadécimale en augmentant les valeurs de chaque composant RGB.
+    
+    Args:
+        hex_code (str): Le code hexadécimal à éclaircir.
+        lightness (int): Le facteur d'éclaircissement (de 0 à 255).
+        
+    Returns:
+        str: Le code hexadécimal éclairci.
+    """
+    # Extraire les composantes RGB du code hexadécimal
+    r, g, b = int(hex_code[:2], 16), int(
+        hex_code[2:4], 16), int(hex_code[4:6], 16)
 
+    # Appliquer l'éclaircissement
+    r = min(255, r + lightness)
+    g = min(255, g + lightness)
+    b = min(255, b + lightness)
+
+    # Retourner le code hexadécimal ajusté
+    return f"{r:02x}{g:02x}{b:02x}"
+
+
+def convert_to_hex(texte: str, lightness: int = 50) -> str:
+    """
+    Convertit un texte en code hexadécimal de 6 caractères et l'éclaire.
+    
     Args:
         texte (str): Le texte à convertir.
-
+        lightness (int): Le facteur d'éclaircissement de la couleur (de 0 à 255).
+        
     Returns:
-        str: Le code hexadécimal de 6 caractères.
+        str: Le code hexadécimal éclairci.
     """
     hex_code = ''.join(format(ord(char), '02x') for char in texte)
-    return hex_code[:6]
+    # On ne garde que les 6 premiers caractères pour le code hex
+    hex_code = hex_code[:6]
+    return lighten_color(hex_code, lightness)
 
 
 def parse_tuto_image(file: GistFile | str) -> list[str]:
