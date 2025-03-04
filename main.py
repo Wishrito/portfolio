@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import aiohttp
 import requests
 from flask import Flask, redirect, render_template, request
 
@@ -72,20 +73,20 @@ def home():
 
 
 @app.get('/projects')
-def projects():
+async def projects():
     """
     Renders the projects page.
 
     Returns:
         A rendered HTML template for the projects page.
     """
-
-    projects_data = requests.get(app.url.api_projects)
+    async with aiohttp.ClientSession() as session:
+        projects_data = await session.get(app.url.api_projects)
     return render_template("projects.html", data=projects_data.json())
 
 
 @app.get('/about')
-def about():
+async def about():
     """
     Fetches tools data from an API endpoint and renders the 'about' page.
 
@@ -98,11 +99,12 @@ def about():
     Returns:
         A rendered HTML template for the 'about' page with tools data.
     """
-    libs_data = requests.get(app.url.api_tools)
+    async with aiohttp.ClientSession() as session:
+        libs_data = await session.get(app.url.api_tools)
     return render_template('about.html', tools_data=libs_data.json())
 
 @app.get('/gists')
-def get_gists():
+async def get_gists():
     """
     Fetches the list of gists from the specified URL and renders the 'tutorials.html' template with the gists data.
 
@@ -114,12 +116,13 @@ def get_gists():
     Returns:
         str: The rendered 'tutorials.html' template with the gists data and root URL.
     """
-    gists_list = requests.get(app.url.api_gists)
+    async with aiohttp.ClientSession() as session:
+        gists_list = await session.get(app.url.api_gists)
     return render_template('tutorials.html', gists=gists_list.json())
 
 
 @app.get('/gist')
-def get_gist():
+async def get_gist():
     """
     Fetches gist metadata and renders the tutorials template.
     This function retrieves the gist ID from the request arguments and constructs
@@ -138,5 +141,6 @@ def get_gist():
     if not gist_id:
         return redirect('/gists')
 
-    gist_data = requests.get(app.url.api_gists, {'id': gist_id})
+    async with aiohttp.ClientSession() as session:
+        gist_data = await session.get(app.url.api_gists, {'id': gist_id})
     return render_template('tutorials.html', gist_data=gist_data.json())

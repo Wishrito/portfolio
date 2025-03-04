@@ -12,13 +12,14 @@ Dependencies:
     - python-dotenv: For loading environment variables.
     - requests: For making HTTP requests."""
 
+import asyncio
 import os
 import re
 import sys
 from importlib.metadata import version
 from pathlib import Path
+import aiohttp
 
-import requests
 from flask import Blueprint, jsonify, request
 from github import Github
 from github.GistFile import GistFile
@@ -26,6 +27,25 @@ from github.GistFile import GistFile
 api = Blueprint('api', __name__)
 api.template_folder = Path(__file__).parent / "pages"
 api.static_folder = Path(__file__).parent / "src"
+
+
+async def fetch_languages(session: aiohttp.ClientSession, repo_name: str):
+    async with session.get(f"https://api.github.com/repos/Wishrito/{repo_name}/languages", timeout=5) as response:
+        return await response.json()
+
+
+def convert_to_hex(texte: str) -> str:
+    """
+    Convertit un texte en code hexadécimal de 6 caractères.
+
+    Args:
+        texte (str): Le texte à convertir.
+
+    Returns:
+        str: Le code hexadécimal de 6 caractères.
+    """
+    hex_code = ''.join(format(ord(char), '02x') for char in texte)
+    return hex_code[:6]
 
 
 def parse_tuto_image(file: GistFile | str) -> list[str]:
@@ -48,51 +68,72 @@ def parse_tuto_image(file: GistFile | str) -> list[str]:
     return match
 
 
+# Fonction principale pour récupérer les projets avec pagination
 @api.get("/projects")
-def fetch_projects():
+async def fetch_projects():
     """
     Load and return project data from GitHub with pagination.
-    This function loads project data from GitHub and supports pagination
-    through the 'page' query parameter.
-    Returns:
-        dict: A dictionary containing the project data loaded from GitHub.
     """
     TOKEN = os.getenv('GITHUB_TOKEN')
     USERNAME = os.getenv('GITHUB_USERNAME')
 
-    repos_request = requests.get(
-        f"https://api.github.com/users/{USERNAME}/repos",
-        headers={"Authorization": f"Bearer {TOKEN}"},
-        timeout=10  # Ajout d'un délai d'attente de 10 secondes
-    )
-    if repos_request.ok:
-        repos = repos_request.json()
-        # Préparer la réponse
-        json_repos = {
-            "projects": [
-                {
-                    "repo": repo['name'],
-                    "url": repo['html_url'],
-                    "description": repo['description'],
-                    "string_languages": str([language[1] for language in enumerate(requests.get(f"https://api.github.com/repos/Wishrito/{repo['name']}/languages", timeout=5).json())]).removeprefix('[').removesuffix(']'),
-                    "languages": [
-                        {
-                            "name": language[1],
-                            "icon": f"{language[1].lower()}-logo"
-                            # Ajout d'un délai d'attente de 10 secondes
-                        } for language in enumerate(requests.get(f"https://api.github.com/repos/Wishrito/{repo['name']}/languages", timeout=5).json())
-                    ]
-                } for repo in repos if repo['fork'] is False
-            ]
-        }
+    async with aiohttp.ClientSession() as session:
+        repos_request = await session.get(
+            f"https://api.github.com/users/{USERNAME}/repos",
+            headers={"Authorization": f"Bearer {TOKEN}"},
+            timeout=10
+        )
+        if repos_request.ok:
+            repos = await repos_request.json()
 
-        languages_set = set()
-        for project in json_repos['projects']:
-            languages_set.update({lang['name']
-                                 for lang in project['languages']})
-        json_repos['languages'] = list(languages_set)
-        return jsonify(json_repos)
-    return jsonify(repos_request.json())
+            # Liste de coroutines pour récupérer les langues de tous les projets
+            language_tasks = [fetch_languages(
+                session, repo['name']) for repo in repos if not repo['fork']]
+            languages_results = await asyncio.gather(*language_tasks)
+
+            json_repos = {
+                "projects": []
+            }
+
+            for repo, languages in zip(repos, languages_results):
+                if not repo['fork']:  # Ignorer les forks
+                    repo_languages = [
+                        {
+                            "name": lang,
+                            "icon": f"{lang.lower()}-logo",
+                            "use_rate": int(count)
+                        }
+                        for lang, count in languages.items()
+                    ]
+                    json_repos['projects'].append({
+                        "repo": repo['name'],
+                        "url": repo['html_url'],
+                        "description": repo['description'],
+                        "languages": repo_languages,
+                        "string_languages": ", ".join(languages.keys()).lower(),
+                    })
+
+            # Extraire les langues uniques
+            languages_set = set()
+            for project in json_repos['projects']:
+                languages_set.update(lang['name']
+                                     for lang in project['languages'])
+
+            json_repos['languages'] = list(languages_set)
+
+            # Déterminer la langue dominante et affecter la couleur
+            for project in json_repos['projects']:
+                lang_name = [language['name']
+                             for language in project['languages']]
+                lang_use_rate = [language['use_rate']
+                                 for language in project['languages']]
+                max_val_couple = max(
+                    zip(lang_name, lang_use_rate), key=lambda x: x[1], default=('', 0))
+                project['hex_color'] = convert_to_hex(max_val_couple[0])
+
+            return jsonify(json_repos)
+
+        return jsonify(repos_request.json())
 
 
 @api.get("/tools")

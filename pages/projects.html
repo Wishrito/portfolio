@@ -15,20 +15,24 @@
     <section class="projects" id="projects">
         {% for project in data.projects %}
         <div class="card" data-languages="{{ project.string_languages }}">
-            <h3>{{ project.repo }}</h3>
+            <header style="background-color: {{ project.hex_color }};">
+                <h3>{{ project.repo }}</h3>
+            </header>
             {% if project.description %}
             <p>{{ project.description }}</p>
             {% else %}
             <p>Aucune description fournie</p>
             {% endif %}
-            <a href="{{ project.url }}">Voir le projet</a>
             <div>
                 <h4>Langages utilisés :</h4>
                 <ul>
-                    {% for lang in project.languages %}
+                {% for lang in project.languages %}
                     <li>{{ lang.name }}</li>
-                    {% endfor %}
+                {% endfor %}
                 </ul>
+            </div>
+            <div>
+                <a href="{{ project.url }}">Voir le projet</a>
             </div>
         </div>
         {% endfor %}
