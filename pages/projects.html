@@ -7,7 +7,7 @@
 <section class="projects" id="projects">
     {% if projects %}
     <select name="language" id="" title="langages">
-        {% for langage in project.languages %}
+        {% for langage in projects.languages %}
         <option value="{{ language.id }}">{{ language.name }}</option>
         {% endfor %}
     </select>
