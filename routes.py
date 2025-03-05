@@ -152,27 +152,27 @@ async def fetch_projects():
                     }
                 )
 
-                # Extraire les langues uniques
-                languages_set = set()
-                for project in json_repos['projects']:
-                    languages_set.update(lang['name'].lower()
-                                         for lang in project['languages'])
+        # Extraire les langues uniques
+        languages_set = set()
+        for project in json_repos['projects']:
+            languages_set.update(lang['name'].lower()
+                                 for lang in project['languages'])
 
-                json_repos['languages'] = list(languages_set)
+        json_repos['languages'] = list(languages_set)
 
-                # # Déterminer la langue dominante et affecter la couleur
-                # for project in json_repos['projects']:
-                #     lang_name = [language['name']
-                #                  for language in project['languages']]
-                #     lang_use_rate = [language['use_rate']
-                #                      for language in project['languages']]
-                #     max_val_couple = max(
-                #         zip(lang_name, lang_use_rate), key=lambda x: x[1], default=('', 0))
-                #     project['hex_color'] = convert_to_hex(max_val_couple[0])
+        # # Déterminer la langue dominante et affecter la couleur
+        # for project in json_repos['projects']:
+        #     lang_name = [language['name']
+        #                  for language in project['languages']]
+        #     lang_use_rate = [language['use_rate']
+        #                      for language in project['languages']]
+        #     max_val_couple = max(
+        #         zip(lang_name, lang_use_rate), key=lambda x: x[1], default=('', 0))
+        #     project['hex_color'] = convert_to_hex(max_val_couple[0])
 
-                return jsonify(json_repos)
+        return jsonify(json_repos)
 
-        return jsonify(await repos_request.json())
+    return jsonify(await repos_request.json())
 
 
 @api.get("/tools")
