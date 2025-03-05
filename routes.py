@@ -20,14 +20,13 @@ from importlib.metadata import version
 from pathlib import Path
 
 import aiohttp
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, render_template, request
 from github import Github
 from github.GistFile import GistFile
 
-api = Blueprint('api', __name__)
+api = Blueprint('api', __name__, url_prefix="/api")
 api.template_folder = Path(__file__).parent / "pages"
 api.static_folder = Path(__file__).parent / "src"
-
 
 async def fetch_languages(session: aiohttp.ClientSession, repo_name: str):
     async with session.get(f"https://api.github.com/repos/Wishrito/{repo_name}/languages", timeout=5) as response:
@@ -101,6 +100,11 @@ async def fetch_projects():
     """
     Load and return project data from GitHub with pagination.
     """
+    API_KEY = os.getenv('LOCAL_API_KEY')
+    if (not 'api_key' in request.args) | (request.args.get('api_key') != API_KEY):
+        return {
+            "error": "Tu n'as pas accès à cette ressource."
+        }, 403
     TOKEN = os.getenv('GITHUB_TOKEN')
     USERNAME = os.getenv('GITHUB_USERNAME')
 
@@ -111,60 +115,62 @@ async def fetch_projects():
             timeout=10
         )
 
-        if repos_request.status in [403, 429]:
+        if repos_request.status == 403:
             return {
-                "response": "Désolé, j'ai un peu de mal à suivre, il y a beaucoup de trafic 😅 réessaie dans quelques minutes, s'il te plaît"
-            }, repos_request.status
+                "error": "Tu n'as pas accès à cette ressource."
+            }, 403
 
-        if repos_request.ok:
-            repos = await repos_request.json()
+        repos = await repos_request.json()
 
-            # Liste de coroutines pour récupérer les langues de tous les projets
-            language_tasks = [fetch_languages(
-                session, repo['name']) for repo in repos if not repo['fork']]
-            languages_results = await asyncio.gather(*language_tasks)
+        # Liste de coroutines pour récupérer les langues de tous les projets
+        language_tasks = [
+            fetch_languages(session, repo['name']) for repo in repos if not repo['fork']
+        ]
+        languages_results = await asyncio.gather(*language_tasks)
 
-            json_repos = {
-                "projects": []
-            }
+        json_repos = {
+            "projects": []
+        }
 
-            for repo, languages in zip(repos, languages_results):
-                if not repo['fork']:  # Ignorer les forks
-                    repo_languages = [
-                        {
-                            "name": lang,
-                            "icon": f"{lang.lower()}-logo",
-                            "use_rate": int(count)
-                        }
-                        for lang, count in languages.items()
-                    ]
-                    json_repos['projects'].append({
+        for repo, languages in zip(repos, languages_results):
+            if not repo['fork']:  # Ignorer les forks
+                repo_languages = [
+                    {
+                        "name": lang,
+                        "icon": f"{lang.lower()}-logo",
+                        "use_rate": int(count)
+                    }
+                    for lang, count in languages.items()
+                ]
+                json_repos['projects'].append(
+                    {
                         "repo": repo['name'],
                         "url": repo['html_url'],
                         "description": repo['description'],
                         "languages": repo_languages,
                         "string_languages": ", ".join(languages.keys()).lower(),
-                    })
+                    }
+                )
 
-            # Extraire les langues uniques
-            languages_set = set()
-            for project in json_repos['projects']:
-                languages_set.update(lang['name'].lower()
-                                     for lang in project['languages'])
+                # Extraire les langues uniques
+                languages_set = set()
+                for project in json_repos['projects']:
+                    languages_set.update(lang['name'].lower()
+                                         for lang in project['languages'])
 
-            json_repos['languages'] = list(languages_set)
+                json_repos['languages'] = list(languages_set)
 
-            # # Déterminer la langue dominante et affecter la couleur
-            # for project in json_repos['projects']:
-            #     lang_name = [language['name']
-            #                  for language in project['languages']]
-            #     lang_use_rate = [language['use_rate']
-            #                      for language in project['languages']]
-            #     max_val_couple = max(
-            #         zip(lang_name, lang_use_rate), key=lambda x: x[1], default=('', 0))
-            #     project['hex_color'] = convert_to_hex(max_val_couple[0])
+                # # Déterminer la langue dominante et affecter la couleur
+                # for project in json_repos['projects']:
+                #     lang_name = [language['name']
+                #                  for language in project['languages']]
+                #     lang_use_rate = [language['use_rate']
+                #                      for language in project['languages']]
+                #     max_val_couple = max(
+                #         zip(lang_name, lang_use_rate), key=lambda x: x[1], default=('', 0))
+                #     project['hex_color'] = convert_to_hex(max_val_couple[0])
 
-            return jsonify(json_repos)
+                return jsonify(json_repos)
 
         return jsonify(await repos_request.json())
 
@@ -177,7 +183,14 @@ def fetch_env_metadata():
         dict: A dictionary containing the Python version and a list of dictionaries 
               with the names and versions of the used libraries.
     """
-    used_libs = ['flask', 'pygithub', 'python-dotenv', 'requests']
+
+    API_KEY = os.getenv('LOCAL_API_KEY')
+    if (not 'api_key' in request.args) | (request.args.get('api_key') != API_KEY):
+        return {
+            "error": "Tu n'as pas accès à cette ressource."
+        }, 403
+
+    used_libs = ['flask', 'pygithub', 'aiohttp', ]
 
     tools_data = {
         'python': f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}',
@@ -214,6 +227,12 @@ def fetch_gist_metadata():
         - embed_url: URL to embed the gist.
         - title: Title derived from the first file's name.
     """
+
+    API_KEY = os.getenv('LOCAL_API_KEY')
+    if (not 'api_key' in request.args) | (request.args.get('api_key') != API_KEY):
+        return {
+            "error": "Tu n'as pas accès à cette ressource."
+        }, 403
     TOKEN = os.getenv('GITHUB_TOKEN')
     USERNAME = os.getenv('GITHUB_USERNAME')
     github = Github(TOKEN)

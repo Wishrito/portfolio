@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 
 import aiohttp
-import requests
 from flask import Flask, redirect, render_template, request
 
 from routes import api
@@ -44,13 +43,13 @@ class Portfolio(Flask):
 
 app = Portfolio("Portfolio")
 
-app.register_blueprint(api, url_prefix="/api")
+app.register_blueprint(api)
 
 
 @app.errorhandler(404)
 def page_not_found(error):
     """
-    Handle 404 Page Not Found error.
+    Handle 404 Page Not Found error by rendering a custom error page.
 
     Args:
         error: The error object containing details about the 404 error.
@@ -58,13 +57,20 @@ def page_not_found(error):
     Returns:
         A rendered template for the 404 error page.
     """
-    return render_template("404.html", e=error)
-
+    return render_template("errors/404.html", e=error)
 
 @app.errorhandler(403)
 def forbidden(error):
+    """
+    Handle 403 Forbidden errors by rendering a custom error page.
 
-    return render_template("403.html", e=error)
+    Args:
+        error: The error object containing details about the 403 error.
+
+    Returns:
+        A rendered HTML template for the 403 error page.
+    """
+    return render_template("errors/403.html", e=error)
 
 @app.get('/')
 def home():
@@ -86,7 +92,7 @@ async def projects():
         A rendered HTML template for the projects page.
     """
     async with aiohttp.ClientSession() as session:
-        projects_data = await session.get(app.url.api_projects)
+        projects_data = await session.get(app.url.api_projects, params={'api_key': os.getenv('LOCAL_API_KEY')})
         return render_template("projects.html", data=await projects_data.json())
 
 
@@ -105,7 +111,7 @@ async def about():
         A rendered HTML template for the 'about' page with tools data.
     """
     async with aiohttp.ClientSession() as session:
-        libs_data = await session.get(app.url.api_tools)
+        libs_data = await session.get(app.url.api_tools, params={'api_key': os.getenv('LOCAL_API_KEY')})
         return render_template('about.html', tools_data=await libs_data.json())
 
 @app.get('/gists')
@@ -122,7 +128,7 @@ async def get_gists():
         str: The rendered 'tutorials.html' template with the gists data and root URL.
     """
     async with aiohttp.ClientSession() as session:
-        gists_list = await session.get(app.url.api_gists)
+        gists_list = await session.get(app.url.api_gists, params={'api_key': os.getenv('LOCAL_API_KEY')})
         return render_template('tutorials.html', gists=await gists_list.json())
 
 
@@ -141,11 +147,15 @@ async def get_gist():
     Raises:
         requests.exceptions.RequestException: If there is an issue with the HTTP request.
     """
+
     gist_id = request.args.get('id')
 
     if not gist_id:
         return redirect('/gists')
 
     async with aiohttp.ClientSession() as session:
-        gist_data = await session.get(app.url.api_gists, params={'id': gist_id})
+        gist_data = await session.get(app.url.api_gists, params={'id': gist_id, 'api_key': os.getenv('LOCAL_API_KEY')})
         return render_template('tutorials.html', gist_data=await gist_data.json())
+
+if not os.getenv("VERCEL_PROJECT_PRODUCTION_URL"):
+    app.run(debug=True)
