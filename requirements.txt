@@ -17,11 +17,13 @@ cssselect==1.2.0
 Deprecated==1.2.18
 fake-useragent==2.0.3
 Flask==3.1.0
+Flask-SQLAlchemy==3.1.1
 frozenlist==1.5.0
+greenlet==3.1.1
 idna==3.10
 importlib_metadata==8.6.1
 itsdangerous==2.2.0
-Jinja2==3.1.5
+Jinja2>=3.1.6
 lxml==5.3.1
 MarkupSafe==3.0.2
 multidict==6.1.0
@@ -37,6 +39,7 @@ pyquery==2.0.1
 python-dotenv==1.0.1
 requests==2.32.3
 soupsieve==2.6
+SQLAlchemy==2.0.38
 tqdm==4.67.1
 typing_extensions==4.12.2
 urllib3==1.26.20

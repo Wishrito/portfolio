@@ -3,13 +3,12 @@ from pathlib import Path
 
 import aiohttp
 from flask import Flask, redirect, render_template, request, url_for
-
-from flask_sqlalchemy import SQLAlchemy
 from werkzeug.routing import Rule
-from routes import api_route
+
 from database import db_route
 from models import db
-from utils import Url
+from routes import api_route
+from utils import Url, call_api
 
 
 def has_no_empty_params(rule: Rule):
@@ -19,13 +18,19 @@ def has_no_empty_params(rule: Rule):
 
 
 class Portfolio(Flask):
+    """
+    Portfolio class that extends the Flask class to create a custom Flask application.
+
+    Attributes:
+        url (Url): An instance of the Url class.
+        vercel_project_production_url (str): The production URL of the Vercel project, retrieved from environment variables.
+    """
     def __init__(self, import_name, static_url_path=None, static_folder="static", static_host=None, host_matching=False, subdomain_matching=False, template_folder="templates", instance_path=None, instance_relative_config=False, root_path=None):
         super().__init__(import_name, static_url_path, Path(__file__).parent / "src", static_host, host_matching,
                          subdomain_matching, Path(__file__).parent / "pages", instance_path, instance_relative_config, root_path)
         self.url = Url()
         self.vercel_project_production_url = os.getenv(
             "VERCEL_PROJECT_PRODUCTION_URL")
-
 
 
 app = Portfolio("Portfolio")
@@ -81,13 +86,11 @@ def home():
 
 @app.route("/site-map")
 def site_map():
-    links = []
-    for rule in app.url_map.iter_rules():
+    links: list[tuple[str, str]] = []
+    for page in (Path(__file__).parent / 'pages').glob('*.html'):
         # Filter out rules we can't navigate to in a browser
         # and rules that require parameters
-        if "GET" in rule.methods and has_no_empty_params(rule):
-            url = url_for(rule.endpoint, **(rule.defaults or {}))
-            links.append((url, rule.endpoint))
+        links.append((page.stem, page.name))
     print(links)
     return render_template('sitemap.html', routes=links)
 
@@ -99,9 +102,13 @@ async def projects():
     Returns:
         A rendered HTML template for the projects page.
     """
-    async with aiohttp.ClientSession() as session:
-        projects_data = await session.get(app.url.api_projects, params={'api_key': os.getenv('LOCAL_API_KEY')})
-        return render_template("projects.html", data=await projects_data.json())
+    projects_data = await call_api(
+        url=app.url.api_projects,
+        parameters={
+            'api_key': os.getenv('LOCAL_API_KEY')
+        }
+    )
+    return render_template("projects.html", data=await projects_data)
 
 
 @app.get('/about')

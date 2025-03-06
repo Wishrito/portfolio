@@ -116,12 +116,13 @@ def create_gist(gist_data: dict):
 
     # Créer un objet GistFile associé à ce Gist
 
+    files: list[dict] = gist_data['files']
     gf_list = [
         GistFile(
             gist_id=new_gist.id,  # Associer ce fichier à un gist existant
             name=gf['name'],
             type=gf['type']
-        ) for gf in gist_data['files']
+        ) for gf in files
     ]
     db.session.add_all(gf_list)
     db.session.commit()
@@ -133,7 +134,7 @@ def create_gist(gist_data: dict):
             GistFileImage(
                 gistfile_id=gfi.id,  # Associer cette image au fichier
                 image=gf
-            ) for gf in gist_data['files'][i]['images']
+            ) for gf in files[i]['images']
         ]
 
     db.session.add_all(gfi_list)
@@ -166,13 +167,13 @@ async def fetch_projects():
                 "error": "Tu n'as pas accès à cette ressource."
             }, 403
 
-        repos = await repos_request.json()
+        repos: list[dict] = await repos_request.json()
 
         # Liste de coroutines pour récupérer les langues de tous les projets
         language_tasks = [
-            fetch_languages(session, repo['name']) for repo in repos if not repo['fork']
+            fetch_languages(session, r['name']) for r in repos if not r['fork']
         ]
-        languages_results = await asyncio.gather(*language_tasks)
+        languages_results: list[dict[str, int]] = await asyncio.gather(*language_tasks)
 
         json_repos = {
             "projects": []
@@ -205,16 +206,6 @@ async def fetch_projects():
                                  for lang in project['languages'])
 
         json_repos['languages'] = list(languages_set)
-
-        # # Déterminer la langue dominante et affecter la couleur
-        # for project in json_repos['projects']:
-        #     lang_name = [language['name']
-        #                  for language in project['languages']]
-        #     lang_use_rate = [language['use_rate']
-        #                      for language in project['languages']]
-        #     max_val_couple = max(
-        #         zip(lang_name, lang_use_rate), key=lambda x: x[1], default=('', 0))
-        #     project['hex_color'] = convert_to_hex(max_val_couple[0])
 
         return jsonify(json_repos)
 

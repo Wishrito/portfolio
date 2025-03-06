@@ -1,6 +1,6 @@
 import aiohttp
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import ForeignKey, Select, select
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import (DeclarativeBase, Mapped, MappedAsDataclass,
                             mapped_column, relationship)
 
