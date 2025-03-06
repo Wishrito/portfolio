@@ -2,36 +2,20 @@ import os
 from pathlib import Path
 
 import aiohttp
-from flask import Flask, redirect, render_template, request
+from flask import Flask, redirect, render_template, request, url_for
 
-from routes import api
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.routing import Rule
+from routes import api_route
+from database import db_route
+from models import db
+from utils import Url
 
 
-class Url:
-
-    def __init__(self):
-        """"""
-
-    @property
-    def api_projects(self):
-        return self.root_url + "/api/projects"
-
-    @property
-    def api_gists(self):
-        return self.root_url + "/api/gist_metadata"
-
-    @property
-    def api_tools(self):
-        return self.root_url + "/api/tools"
-
-    @property
-    def root_url(self):
-        url = os.getenv("VERCEL_PROJECT_PRODUCTION_URL", "default")
-        if url == "default":
-            url = request.url_root
-        else:
-            url = "https://" + url
-        return url
+def has_no_empty_params(rule: Rule):
+    defaults = rule.defaults if rule.defaults is not None else ()
+    arguments = rule.arguments if rule.arguments is not None else ()
+    return len(defaults) >= len(arguments)
 
 
 class Portfolio(Flask):
@@ -39,11 +23,23 @@ class Portfolio(Flask):
         super().__init__(import_name, static_url_path, Path(__file__).parent / "src", static_host, host_matching,
                          subdomain_matching, Path(__file__).parent / "pages", instance_path, instance_relative_config, root_path)
         self.url = Url()
+        self.vercel_project_production_url = os.getenv(
+            "VERCEL_PROJECT_PRODUCTION_URL")
+
 
 
 app = Portfolio("Portfolio")
+if not app.vercel_project_production_url:
+    app.config['SERVER_NAME'] = "view-localhost:5000"
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+# Désactive la modification du suivi
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db.init_app(app)
+with app.app_context():
+    db.create_all()
 
-app.register_blueprint(api)
+app.register_blueprint(db_route)
+app.register_blueprint(api_route)
 
 
 @app.errorhandler(404)
@@ -82,6 +78,18 @@ def home():
     """
     return render_template("index.html")
 
+
+@app.route("/site-map")
+def site_map():
+    links = []
+    for rule in app.url_map.iter_rules():
+        # Filter out rules we can't navigate to in a browser
+        # and rules that require parameters
+        if "GET" in rule.methods and has_no_empty_params(rule):
+            url = url_for(rule.endpoint, **(rule.defaults or {}))
+            links.append((url, rule.endpoint))
+    print(links)
+    return render_template('sitemap.html', routes=links)
 
 @app.get('/projects')
 async def projects():
@@ -157,5 +165,5 @@ async def get_gist():
         gist_data = await session.get(app.url.api_gists, params={'id': gist_id, 'api_key': os.getenv('LOCAL_API_KEY')})
         return render_template('tutorials.html', gist_data=await gist_data.json())
 
-if not os.getenv("VERCEL_PROJECT_PRODUCTION_URL"):
-    app.run(debug=True)
+if not app.vercel_project_production_url:
+    app.run(host="view-localhost", port=5000, debug=True)

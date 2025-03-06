@@ -1,6 +1,45 @@
 :root {
   scroll-behavior: smooth;
 }
+/* Personnaliser la scrollbar pour tous les éléments */
+::-webkit-scrollbar {
+  width: 12px;
+  /* Largeur de la scrollbar */
+  height: 12px;
+  /* Hauteur de la scrollbar pour les éléments horizontaux */
+}
+
+/* Personnaliser le fond de la scrollbar */
+::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+  /* Couleur du fond de la scrollbar */
+  border-radius: 10px;
+  /* Bord arrondi */
+}
+
+/* Personnaliser le curseur de la scrollbar */
+::-webkit-scrollbar-thumb {
+  background-color: #888;
+  /* Couleur du curseur */
+  border-radius: 10px;
+  /* Bord arrondi du curseur */
+}
+
+/* Personnaliser le curseur lorsqu'il est survolé */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+  /* Couleur du curseur au survol */
+}
+
+/* Personnaliser la scrollbar pour les éléments horizontaux */
+::-webkit-scrollbar-horizontal {
+  height: 10px;
+}
+
+/* Personnaliser la scrollbar verticale */
+::-webkit-scrollbar-vertical {
+  width: 10px;
+}
 
 body {
   font-family: Arial, sans-serif;
@@ -28,27 +67,42 @@ p {
 .navbar {
   background-color: #333;
   overflow: hidden;
+  position: fixed;
+    /* Fixe la navbar en haut de la page */
+    top: 0;
+    /* Place la navbar tout en haut */
+    left: 0;
+    /* Aligne la navbar à gauche */
+    width: 100%;
+    /* Assure que la navbar prend toute la largeur de la fenêtre */
+    z-index: 1000;
+    /* Assure que la navbar soit au-dessus des autres éléments */
 }
+
 .navbar ul {
   list-style: none;
   margin: 0;
-    padding: 0;
+  padding: 0;
     display: flex;
     justify-content: center;
 }
+
 .navbar ul li {
   margin: 0 15px;
 }
+
 .navbar ul li a {
   color: #fff;
   text-decoration: none;
-    padding: 14px 20px;
+  padding: 14px 20px;
     display: block;
 }
+
 .navbar ul li a:hover {
   background-color: #575757;
   border-radius: 5px;
 }
+
 
 /* Styles pour le menu de sélection */
 select#language {

@@ -20,58 +20,25 @@ from importlib.metadata import version
 from pathlib import Path
 
 import aiohttp
-from flask import Blueprint, jsonify, render_template, request
+from flask import Blueprint, jsonify, request
 from github import Github
-from github.GistFile import GistFile
+from sqlalchemy import select, update
 
-api = Blueprint('api', __name__, url_prefix="/api")
-api.template_folder = Path(__file__).parent / "pages"
-api.static_folder = Path(__file__).parent / "src"
-
-async def fetch_languages(session: aiohttp.ClientSession, repo_name: str):
-    async with session.get(f"https://api.github.com/repos/Wishrito/{repo_name}/languages", timeout=5) as response:
-        return await response.json()
+from database import fetch_languages
+from models import Gist, GistFile, GistFileImage, Project, db
+from utils import Url, call_api
 
 
-# def lighten_color(hex_code: str, lightness: int = 50) -> str:
-#     """
-#     Éclaire la couleur hexadécimale en augmentant les valeurs de chaque composant RGB.
-
-#     Args:
-#         hex_code (str): Le code hexadécimal à éclaircir.
-#         lightness (int): Le facteur d'éclaircissement (de 0 à 255).
-
-#     Returns:
-#         str: Le code hexadécimal éclairci.
-#     """
-#     # Extraire les composantes RGB du code hexadécimal
-#     r, g, b = int(hex_code[:2], 16), int(
-#         hex_code[2:4], 16), int(hex_code[4:6], 16)
-
-#     # Appliquer l'éclaircissement
-#     r = min(255, r + lightness)
-#     g = min(255, g + lightness)
-#     b = min(255, b + lightness)
-
-#     # Retourner le code hexadécimal ajusté
-#     return f"{r:02x}{g:02x}{b:02x}"
+class Api(Blueprint):
+    def __init__(self, name, import_name, static_folder=None, static_url_path=None, template_folder=None, url_prefix=None, subdomain=None, url_defaults=None, root_path=None, cli_group=...):
+        super().__init__(name, import_name, static_folder, static_url_path,
+                         template_folder, url_prefix, subdomain, url_defaults, root_path, cli_group)
+        self.url = Url()
 
 
-# def convert_to_hex(texte: str, lightness: int = 50) -> str:
-#     """
-#     Convertit un texte en code hexadécimal de 6 caractères et l'éclaire.
-
-#     Args:
-#         texte (str): Le texte à convertir.
-#         lightness (int): Le facteur d'éclaircissement de la couleur (de 0 à 255).
-
-#     Returns:
-#         str: Le code hexadécimal éclairci.
-#     """
-#     hex_code = ''.join(format(ord(char), '02x') for char in texte)
-#     # On ne garde que les 6 premiers caractères pour le code hex
-#     hex_code = hex_code[:6]
-#     return lighten_color(hex_code, lightness)
+api_route = Api('api', __name__, url_prefix="/api")
+api_route.template_folder = Path(__file__).parent / "pages"
+api_route.static_folder = Path(__file__).parent / "src"
 
 
 def parse_tuto_image(file: GistFile | str) -> list[str]:
@@ -94,20 +61,99 @@ def parse_tuto_image(file: GistFile | str) -> list[str]:
     return match
 
 
+@api_route.route("/tests", methods=['GET', 'POST'])
+async def tests():
+    match request.method:
+        case 'GET':
+            stmt = (
+                select(Gist, GistFile, GistFileImage)
+                .where(Gist.author == "Wishrito")
+                # Condition de jointure correcte pour GistFile
+                .join(GistFile, GistFile.gist_id == Gist.id)
+                # Condition de jointure correcte pour GistFileImage
+                .join(GistFileImage, GistFileImage.gistfile_id == GistFile.id)
+            )
+            result = db.session.execute(stmt)
+            print(result.all())
+            if result is None:
+                return "pas de résultat"
+            return str(result.all())
+        case "POST":
+            response: list[dict] = await call_api(api_route.url.api_projects)
+            for project in response:
+                select_stmt = (
+                    select(Gist, GistFile, GistFileImage)
+                    .where(Gist.author == project['author'])
+                    # Condition de jointure correcte pour GistFile
+                    .join(GistFile, GistFile.gist_id == Gist.id)
+                    # Condition de jointure correcte pour GistFileImage
+                    .join(GistFileImage, GistFileImage.gistfile_id == GistFile.id)
+                )
+                exists = db.session.execute(select_stmt).first()
+                if exists:
+                    update_stmt = (
+                        update(Gist)
+                        .where(Gist.id == exists[0].id)
+                        .values(**project)
+                    )
+                    print(update_stmt)
+                    db.session.execute(update_stmt)
+                else:
+                    create_gist(project)
+                db.session.commit()
 
-@api.get("/projects")
+
+def create_gist(gist_data: dict):
+    new_gist = Gist(
+        id=gist_data['id'],
+        author=gist_data['author'],
+        description=gist_data['description'],
+        embed_url=gist_data['embed_url']
+    )
+
+    db.session.add(new_gist)
+    db.session.commit()
+
+    # Créer un objet GistFile associé à ce Gist
+
+    gf_list = [
+        GistFile(
+            gist_id=new_gist.id,  # Associer ce fichier à un gist existant
+            name=gf['name'],
+            type=gf['type']
+        ) for gf in gist_data['files']
+    ]
+    db.session.add_all(gf_list)
+    db.session.commit()
+    gfi_list = []
+    for i, gfi in enumerate(gf_list):
+        db.session.refresh(gfi)
+
+        gfi_list = [
+            GistFileImage(
+                gistfile_id=gfi.id,  # Associer cette image au fichier
+                image=gf
+            ) for gf in gist_data['files'][i]['images']
+        ]
+
+    db.session.add_all(gfi_list)
+    db.session.commit()
+    db.session.close()
+
+
+@api_route.get("/projects")
 async def fetch_projects():
     """
     Load and return project data from GitHub with pagination.
     """
     API_KEY = os.getenv('LOCAL_API_KEY')
-    if (not 'api_key' in request.args) | (request.args.get('api_key') != API_KEY):
+    if ('api_key' not in request.args) | (request.args.get('api_key') != API_KEY):
         return {
             "error": "Tu n'as pas accès à cette ressource."
         }, 403
     TOKEN = os.getenv('GITHUB_TOKEN')
     USERNAME = os.getenv('GITHUB_USERNAME')
-
+    repos_request = None
     async with aiohttp.ClientSession() as session:
         repos_request = await session.get(
             f"https://api.github.com/users/{USERNAME}/repos",
@@ -175,7 +221,7 @@ async def fetch_projects():
     return jsonify(await repos_request.json())
 
 
-@api.get("/tools")
+@api_route.get("/tools")
 def fetch_env_metadata():
     """
     Retrieves metadata about the current Python environment and used libraries.
@@ -185,12 +231,12 @@ def fetch_env_metadata():
     """
 
     API_KEY = os.getenv('LOCAL_API_KEY')
-    if (not 'api_key' in request.args) | (request.args.get('api_key') != API_KEY):
+    if ('api_key' not in request.args) | (request.args.get('api_key') != API_KEY):
         return {
             "error": "Tu n'as pas accès à cette ressource."
         }, 403
 
-    used_libs = ['flask', 'pygithub', 'aiohttp', ]
+    used_libs = ['flask', 'pygithub', 'aiohttp']
 
     tools_data = {
         'python': f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}',
@@ -205,7 +251,7 @@ def fetch_env_metadata():
     return tools_data
 
 
-@api.get('/gist_metadata')
+@api_route.get('/gist_metadata')
 def fetch_gist_metadata():
     """
     Fetches metadata for GitHub gists of a user.
@@ -229,7 +275,7 @@ def fetch_gist_metadata():
     """
 
     API_KEY = os.getenv('LOCAL_API_KEY')
-    if (not 'api_key' in request.args) | (request.args.get('api_key') != API_KEY):
+    if ('api_key' not in request.args) | (request.args.get('api_key') != API_KEY):
         return {
             "error": "Tu n'as pas accès à cette ressource."
         }, 403
@@ -243,22 +289,22 @@ def fetch_gist_metadata():
     if "id" in request.args:
         gist_id = request.args.get("id")
 
-        for gist in gists:
-            if gist.id == gist_id:
+        for g in gists:
+            if g.id == gist_id:
                 gist_data = {
-                    'author': gist.owner.name,
-                    'gist_id': gist.id,
-                    'description': gist.description,
+                    'author': g.owner.name,
+                    'gist_id': g.id,
+                    'description': g.description,
                     'files': [
                         {
-                            'name': gist.files[file].filename,
-                            'type': gist.files[file].type,
+                            'name': g.files[file].filename,
+                            'type': g.files[file].type,
                             'images': [
-                                f"{url}.jpg" for url in parse_tuto_image(gist.files[file])
+                                f"{url}.jpg" for url in parse_tuto_image(g.files[file])
                             ]
-                        } for file in gist.files
+                        } for file in g.files
                     ],
-                    'embed_url': f'https://gist.github.com/Wishrito/{gist.id}.js'
+                    'embed_url': f'https://gist.github.com/Wishrito/{g.id}.js'
                 }
                 gist_data['title'] = str(gist_data['files'][0]['name'].removesuffix(
                     '.md').title().replace('_', ' '))
@@ -282,8 +328,8 @@ def fetch_gist_metadata():
                 'embed_url': f'https://gist.github.com/Wishrito/{gist.id}.js'
             } for gist in gists
         ]
-        for gist in gists_list:
-            gist['title'] = str(gist['files'][0]['name'].removesuffix(
+        for g in gists_list:
+            g['title'] = str(g['files'][0]['name'].removesuffix(
                 '.md').title().replace('_', ' '))
         return gists_list
     github.close()

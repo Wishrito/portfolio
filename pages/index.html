@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "templates/base.html" %}
     {% block meta %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/animate.css')}}">
     <meta name="description" content="Mon portfolio">
@@ -16,6 +16,7 @@
         <div id="photo" class="circle">
             <img src="{{url_for('static', filename='img/RT.png')}}" alt="Photo de profil">
         </div>
+        <h1>Mon Portfolio</h1>
         <p>Bonjour, je m'appelle Rayan, et je suis un développeur web passionné.</p>
         <p>Je manipule les technologies Python, HTML/CSS, JavaScript, PHP et SQL.</p>
     </div>
