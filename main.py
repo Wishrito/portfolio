@@ -36,7 +36,7 @@ class Portfolio(Flask):
 app = Portfolio("Portfolio")
 if not app.vercel_project_production_url:
     app.config['SERVER_NAME'] = "view-localhost:5000"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tmp/database.db'
 # Désactive la modification du suivi
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)

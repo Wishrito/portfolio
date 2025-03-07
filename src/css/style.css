@@ -62,6 +62,9 @@ h3 {
 
 p {
   line-height: 1.6;
+  font-size: 16px;
+    color: #7f8c8d;
+    margin: 10px 0;
 }
 
 .navbar {
@@ -145,13 +148,6 @@ header h3 {
   margin: 0;
 }
 
-/* Style pour le paragraphe de description */
-p {
-  font-size: 16px;
-  color: #7f8c8d;
-  line-height: 1.6;
-  margin: 10px 0;
-}
 
 /* Style lorsque la description n'est pas fournie */
 p:empty {

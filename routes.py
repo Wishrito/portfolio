@@ -35,7 +35,6 @@ class Api(Blueprint):
                          template_folder, url_prefix, subdomain, url_defaults, root_path, cli_group)
         self.url = Url()
 
-
 api_route = Api('api', __name__, url_prefix="/api")
 api_route.template_folder = Path(__file__).parent / "pages"
 api_route.static_folder = Path(__file__).parent / "src"
