@@ -20,47 +20,19 @@ from importlib.metadata import version
 from pathlib import Path
 
 import aiohttp
-from flask import Blueprint, jsonify, request
+from flask import jsonify, request
 from github import Github
 from sqlalchemy import select, update
 
-from modules.database import fetch_languages
-from modules.models import Gist, GistFile, GistFileImage, Project, db
-from modules.utils import Url, call_api
+from .classes import Api
+from .database import fetch_languages
+from .models import Gist, GistFile, GistFileImage, Project, db
+from .utils import call_api
 
-
-class Api(Blueprint):
-    def __init__(
-        self,
-        name,
-        import_name,
-        static_folder=None,
-        static_url_path=None,
-        template_folder=None,
-        url_prefix=None,
-        subdomain=None,
-        url_defaults=None,
-        root_path=None,
-        cli_group=...,
-    ):
-        super().__init__(
-            name,
-            import_name,
-            static_folder,
-            static_url_path,
-            template_folder,
-            url_prefix,
-            subdomain,
-            url_defaults,
-            root_path,
-            cli_group,
-        )
-        self.url = Url()
-
-
-api_route = Api("api", __name__, url_prefix="/api")
-api_route.template_folder = Path(__file__).parent / "pages"
-api_route.static_folder = Path(__file__).parent / "src"
+api_bp = Api("api", __name__, url_prefix="/api")
+api_bp.template_folder = Path(__file__).parent.parent / "pages"
+print(api_bp.template_folder)
+api_bp.static_folder = Path(__file__).parent.parent / "src"
 
 
 def parse_tuto_image(file: GistFile | str) -> list[str]:
@@ -83,44 +55,27 @@ def parse_tuto_image(file: GistFile | str) -> list[str]:
     return match
 
 
-@api_route.route("/tests", methods=["GET", "POST"])
-async def tests():
-    match request.method:
-        case "GET":
-            stmt = (
-                select(Gist, GistFile, GistFileImage).where(Gist.author == "Wishrito")
+if api_bp.vercel_project_production_url is None:
+
+    @api_bp.route("/refresh_db", methods=["GET", "POST"])
+    async def refresh_db():
+        gists: list[dict] = await call_api(api_bp.url.api_gists)
+        for g in gists:
+            select_stmt = (
+                select(Gist, GistFile, GistFileImage).where(Gist.author == g["author"])
                 # Condition de jointure correcte pour GistFile
                 .join(GistFile, GistFile.gist_id == Gist.id)
                 # Condition de jointure correcte pour GistFileImage
                 .join(GistFileImage, GistFileImage.gistfile_id == GistFile.id)
             )
-            result = db.session.execute(stmt)
-            print(result.all())
-            if result is None:
-                return "pas de résultat"
-            return str(result.all())
-        case "POST":
-            response: list[dict] = await call_api(api_route.url.api_projects)
-            for project in response:
-                select_stmt = (
-                    select(Gist, GistFile, GistFileImage).where(
-                        Gist.author == project["author"]
-                    )
-                    # Condition de jointure correcte pour GistFile
-                    .join(GistFile, GistFile.gist_id == Gist.id)
-                    # Condition de jointure correcte pour GistFileImage
-                    .join(GistFileImage, GistFileImage.gistfile_id == GistFile.id)
-                )
-                exists = db.session.execute(select_stmt).first()
-                if exists:
-                    update_stmt = (
-                        update(Gist).where(Gist.id == exists[0].id).values(**project)
-                    )
-                    print(update_stmt)
-                    db.session.execute(update_stmt)
-                else:
-                    create_gist(project)
-                db.session.commit()
+            exists = db.session.execute(select_stmt).first()
+            if exists:
+                update_stmt = update(Gist).where(Gist.id == exists[0].id).values(**g)
+                db.session.execute(update_stmt)
+            else:
+                create_gist(g)
+            db.session.commit()
+        return {"error": "forbidden"}, 403
 
 
 def create_gist(gist_data: dict):
@@ -163,7 +118,7 @@ def create_gist(gist_data: dict):
     db.session.close()
 
 
-@api_route.get("/projects")
+@api_bp.get("/projects")
 async def fetch_projects():
     """
     Load and return project data from GitHub with pagination.
@@ -226,7 +181,7 @@ async def fetch_projects():
     return jsonify(await repos_request.json())
 
 
-@api_route.get("/tools")
+@api_bp.get("/tools")
 def fetch_env_metadata():
     """
     Retrieves metadata about the current Python environment and used libraries.
@@ -249,7 +204,7 @@ def fetch_env_metadata():
     return tools_data
 
 
-@api_route.get("/gist_metadata")
+@api_bp.get("/gist_metadata")
 def fetch_gist_metadata():
     """
     Fetches metadata for GitHub gists of a user.

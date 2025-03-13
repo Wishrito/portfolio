@@ -2,13 +2,16 @@ import os
 from pathlib import Path
 
 import aiohttp
-from flask import Flask, redirect, render_template, request, url_for
+from dotenv import load_dotenv
+from flask import redirect, render_template, request
 from werkzeug.routing import Rule
 
-from modules.database import db_route
+from modules.classes import Portfolio
+from modules.database import db_bp
+from modules.api import api_bp
+from modules.handlers import handler_bp
 from modules.models import db
-from modules.routes import api_route
-from modules.utils import Url, call_api
+from modules.utils import call_api
 
 
 def has_no_empty_params(rule: Rule):
@@ -17,27 +20,11 @@ def has_no_empty_params(rule: Rule):
     return len(defaults) >= len(arguments)
 
 
-class Portfolio(Flask):
-    """
-    Portfolio class that extends the Flask class to create a custom Flask application.
-
-    Attributes:
-        url (Url): An instance of the Url class.
-        vercel_project_production_url (str): The production URL of the Vercel project, retrieved from environment variables.
-    """
-    def __init__(self, import_name, static_url_path=None, static_folder="static", static_host=None, host_matching=False, subdomain_matching=False, template_folder="templates", instance_path=None, instance_relative_config=False, root_path=None):
-        super().__init__(import_name, static_url_path, Path(__file__).parent / "src", static_host, host_matching,
-                         subdomain_matching, Path(__file__).parent / "pages", instance_path, instance_relative_config, root_path)
-        self.url = Url()
-        self.vercel_project_production_url = os.getenv(
-            "VERCEL_PROJECT_PRODUCTION_URL")
-        self.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
-
-
 app = Portfolio("Portfolio")
 if not app.vercel_project_production_url:
     app.config['SERVER_NAME'] = "view-localhost:5000"
-
+load_dotenv()
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 
 # Désactive la modification du suivi
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -45,35 +32,10 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
-app.register_blueprint(db_route)
-app.register_blueprint(api_route)
+app.register_blueprint(db_bp)
+app.register_blueprint(api_bp)
+app.register_blueprint(handler_bp)
 
-
-@app.errorhandler(404)
-def page_not_found(error):
-    """
-    Handle 404 Page Not Found error by rendering a custom error page.
-
-    Args:
-        error: The error object containing details about the 404 error.
-
-    Returns:
-        A rendered template for the 404 error page.
-    """
-    return render_template("errors/404.html", e=error)
-
-@app.errorhandler(403)
-def forbidden(error):
-    """
-    Handle 403 Forbidden errors by rendering a custom error page.
-
-    Args:
-        error: The error object containing details about the 403 error.
-
-    Returns:
-        A rendered HTML template for the 403 error page.
-    """
-    return render_template("errors/403.html", e=error)
 
 @app.get('/')
 def home():
@@ -86,15 +48,14 @@ def home():
     return render_template("index.html")
 
 
-@app.route("/site-map")
-def site_map():
-    links: list[tuple[str, str]] = []
-    for page in (Path(__file__).parent / 'pages').glob('*.html'):
-        # Filter out rules we can't navigate to in a browser
-        # and rules that require parameters
-        links.append((page.stem, page.name))
-    print(links)
-    return render_template('sitemap.html', routes=links)
+# @app.route("/site-map")
+# def site_map():
+#     links: list[tuple[str, str]] = []
+#     for page in Path(app.template_folder).glob("*.html"):
+#         # Filter out rules we can't navigate to in a browser
+#         # and rules that require parameters
+#         links.append((page.stem, page.name))
+#     return render_template('sitemap.html', routes=links)
 
 @app.get('/projects')
 async def projects():
@@ -110,7 +71,7 @@ async def projects():
             'api_key': os.getenv('LOCAL_API_KEY')
         }
     )
-    return render_template("projects.html", data=await projects_data)
+    return render_template("projects.html", data=projects_data)
 
 
 @app.get('/about')
