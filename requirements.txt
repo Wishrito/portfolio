@@ -23,12 +23,13 @@ greenlet==3.1.1
 idna==3.10
 importlib_metadata==8.6.1
 itsdangerous==2.2.0
-Jinja2>=3.1.6
+Jinja2==3.1.6
 lxml==5.3.1
 MarkupSafe==3.0.2
 multidict==6.1.0
 parse==1.20.2
 propcache==0.3.0
+psycopg2==2.9.10
 pycparser==2.22
 pyee==11.1.1
 PyGithub==2.6.1
