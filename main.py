@@ -48,14 +48,15 @@ def home():
     return render_template("index.html")
 
 
-# @app.route("/site-map")
-# def site_map():
-#     links: list[tuple[str, str]] = []
-#     for page in Path(app.template_folder).glob("*.html"):
-#         # Filter out rules we can't navigate to in a browser
-#         # and rules that require parameters
-#         links.append((page.stem, page.name))
-#     return render_template('sitemap.html', routes=links)
+@app.route("/site-map")
+def site_map():
+    links: list[tuple[str, str]] = []
+    for page in Path(app.template_folder).glob("*.html"):
+        # Filter out rules we can't navigate to in a browser
+        # and rules that require parameters
+        links.append((page.stem, page.name))
+    return render_template("sitemap.html", routes=links)
+
 
 @app.get('/projects')
 async def projects():

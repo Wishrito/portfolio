@@ -1,9 +1,15 @@
 {% extends "templates/base.html" %}
 {% block title %}Site map{% endblock %}
 {% block content %}
-{% for path, view_name in routes %}
-<li>
-    <a href="{{ path }}">{{ path }}</a> - {{ view_name }}
-</li>
-{% endfor %}
+<div>
+    <h2>Carte du site</h2>
+    <ul>
+    {% for path, view_name in routes %}
+
+    <li>
+        <a href="{{ path }}">{{ path }}</a> - {{ view_name }}
+    </li>
+    {% endfor %}
+    </ul>
+    </div>
 {% endblock %}
