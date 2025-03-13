@@ -1,5 +1,5 @@
 import os
-from typing import Any
+from typing import Any, Optional
 import aiohttp
 from flask import request
 
@@ -28,12 +28,17 @@ class Url:
         return url
 
 
-async def call_api(client_session: aiohttp.ClientSession = None, url: str = None, method: str = "get", parameters: dict = {}) -> Any:
+async def call_api(
+    parameters: Optional[dict],
+    client_session: aiohttp.ClientSession = None,
+    url: str = None,
+    method: str = "get",
+) -> Any:
     if client_session is None:
         client_session = aiohttp.ClientSession()
     async with client_session as session:
         http_method = getattr(session, method)
-        if method in dir(session) and callable(http_method):
+        if all([method in dir(session), callable(http_method), parameters is not None]):
             response = await http_method(url, params=parameters)
             if response.status == 200:
                 api_response = await response.json()

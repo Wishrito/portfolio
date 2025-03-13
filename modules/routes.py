@@ -24,18 +24,41 @@ from flask import Blueprint, jsonify, request
 from github import Github
 from sqlalchemy import select, update
 
-from database import fetch_languages
-from models import Gist, GistFile, GistFileImage, Project, db
-from utils import Url, call_api
+from modules.database import fetch_languages
+from modules.models import Gist, GistFile, GistFileImage, Project, db
+from modules.utils import Url, call_api
 
 
 class Api(Blueprint):
-    def __init__(self, name, import_name, static_folder=None, static_url_path=None, template_folder=None, url_prefix=None, subdomain=None, url_defaults=None, root_path=None, cli_group=...):
-        super().__init__(name, import_name, static_folder, static_url_path,
-                         template_folder, url_prefix, subdomain, url_defaults, root_path, cli_group)
+    def __init__(
+        self,
+        name,
+        import_name,
+        static_folder=None,
+        static_url_path=None,
+        template_folder=None,
+        url_prefix=None,
+        subdomain=None,
+        url_defaults=None,
+        root_path=None,
+        cli_group=...,
+    ):
+        super().__init__(
+            name,
+            import_name,
+            static_folder,
+            static_url_path,
+            template_folder,
+            url_prefix,
+            subdomain,
+            url_defaults,
+            root_path,
+            cli_group,
+        )
         self.url = Url()
 
-api_route = Api('api', __name__, url_prefix="/api")
+
+api_route = Api("api", __name__, url_prefix="/api")
 api_route.template_folder = Path(__file__).parent / "pages"
 api_route.static_folder = Path(__file__).parent / "src"
 
@@ -60,13 +83,12 @@ def parse_tuto_image(file: GistFile | str) -> list[str]:
     return match
 
 
-@api_route.route("/tests", methods=['GET', 'POST'])
+@api_route.route("/tests", methods=["GET", "POST"])
 async def tests():
     match request.method:
-        case 'GET':
+        case "GET":
             stmt = (
-                select(Gist, GistFile, GistFileImage)
-                .where(Gist.author == "Wishrito")
+                select(Gist, GistFile, GistFileImage).where(Gist.author == "Wishrito")
                 # Condition de jointure correcte pour GistFile
                 .join(GistFile, GistFile.gist_id == Gist.id)
                 # Condition de jointure correcte pour GistFileImage
@@ -81,8 +103,9 @@ async def tests():
             response: list[dict] = await call_api(api_route.url.api_projects)
             for project in response:
                 select_stmt = (
-                    select(Gist, GistFile, GistFileImage)
-                    .where(Gist.author == project['author'])
+                    select(Gist, GistFile, GistFileImage).where(
+                        Gist.author == project["author"]
+                    )
                     # Condition de jointure correcte pour GistFile
                     .join(GistFile, GistFile.gist_id == Gist.id)
                     # Condition de jointure correcte pour GistFileImage
@@ -91,9 +114,7 @@ async def tests():
                 exists = db.session.execute(select_stmt).first()
                 if exists:
                     update_stmt = (
-                        update(Gist)
-                        .where(Gist.id == exists[0].id)
-                        .values(**project)
+                        update(Gist).where(Gist.id == exists[0].id).values(**project)
                     )
                     print(update_stmt)
                     db.session.execute(update_stmt)
@@ -104,10 +125,10 @@ async def tests():
 
 def create_gist(gist_data: dict):
     new_gist = Gist(
-        id=gist_data['id'],
-        author=gist_data['author'],
-        description=gist_data['description'],
-        embed_url=gist_data['embed_url']
+        id=gist_data["id"],
+        author=gist_data["author"],
+        description=gist_data["description"],
+        embed_url=gist_data["embed_url"],
     )
 
     db.session.add(new_gist)
@@ -115,13 +136,14 @@ def create_gist(gist_data: dict):
 
     # Créer un objet GistFile associé à ce Gist
 
-    files: list[dict] = gist_data['files']
+    files: list[dict] = gist_data["files"]
     gf_list = [
         GistFile(
             gist_id=new_gist.id,  # Associer ce fichier à un gist existant
-            name=gf['name'],
-            type=gf['type']
-        ) for gf in files
+            name=gf["name"],
+            type=gf["type"],
+        )
+        for gf in files
     ]
     db.session.add_all(gf_list)
     db.session.commit()
@@ -131,9 +153,9 @@ def create_gist(gist_data: dict):
 
         gfi_list = [
             GistFileImage(
-                gistfile_id=gfi.id,  # Associer cette image au fichier
-                image=gf
-            ) for gf in files[i]['images']
+                gistfile_id=gfi.id, image=gf  # Associer cette image au fichier
+            )
+            for gf in files[i]["images"]
         ]
 
     db.session.add_all(gfi_list)
@@ -146,53 +168,47 @@ async def fetch_projects():
     """
     Load and return project data from GitHub with pagination.
     """
-    API_KEY = os.getenv('LOCAL_API_KEY')
-    if ('api_key' not in request.args) | (request.args.get('api_key') != API_KEY):
-        return {
-            "error": "Tu n'as pas accès à cette ressource."
-        }, 403
-    TOKEN = os.getenv('GITHUB_TOKEN')
-    USERNAME = os.getenv('GITHUB_USERNAME')
+    API_KEY = os.getenv("LOCAL_API_KEY")
+    if ("api_key" not in request.args) | (request.args.get("api_key") != API_KEY):
+        return {"error": "Tu n'as pas accès à cette ressource."}, 403
+    TOKEN = os.getenv("GITHUB_TOKEN")
+    USERNAME = os.getenv("GITHUB_USERNAME")
     repos_request = None
     async with aiohttp.ClientSession() as session:
         repos_request = await session.get(
             f"https://api.github.com/users/{USERNAME}/repos",
             headers={"Authorization": f"Bearer {TOKEN}"},
-            timeout=10
+            timeout=10,
         )
 
         if repos_request.status == 403:
-            return {
-                "error": "Tu n'as pas accès à cette ressource."
-            }, 403
+            return {"error": "Tu n'as pas accès à cette ressource."}, 403
 
         repos: list[dict] = await repos_request.json()
 
         # Liste de coroutines pour récupérer les langues de tous les projets
         language_tasks = [
-            fetch_languages(session, r['name']) for r in repos if not r['fork']
+            fetch_languages(session, r["name"]) for r in repos if not r["fork"]
         ]
         languages_results: list[dict[str, int]] = await asyncio.gather(*language_tasks)
 
-        json_repos = {
-            "projects": []
-        }
+        json_repos = {"projects": []}
 
         for repo, languages in zip(repos, languages_results):
-            if not repo['fork']:  # Ignorer les forks
+            if not repo["fork"]:  # Ignorer les forks
                 repo_languages = [
                     {
                         "name": lang,
                         "icon": f"{lang.lower()}-logo",
-                        "use_rate": int(count)
+                        "use_rate": int(count),
                     }
                     for lang, count in languages.items()
                 ]
-                json_repos['projects'].append(
+                json_repos["projects"].append(
                     {
-                        "repo": repo['name'],
-                        "url": repo['html_url'],
-                        "description": repo['description'],
+                        "repo": repo["name"],
+                        "url": repo["html_url"],
+                        "description": repo["description"],
                         "languages": repo_languages,
                         "string_languages": ", ".join(languages.keys()).lower(),
                     }
@@ -200,11 +216,10 @@ async def fetch_projects():
 
         # Extraire les langues uniques
         languages_set = set()
-        for project in json_repos['projects']:
-            languages_set.update(lang['name'].lower()
-                                 for lang in project['languages'])
+        for project in json_repos["projects"]:
+            languages_set.update(lang["name"].lower() for lang in project["languages"])
 
-        json_repos['languages'] = list(languages_set)
+        json_repos["languages"] = list(languages_set)
 
         return jsonify(json_repos)
 
@@ -216,38 +231,31 @@ def fetch_env_metadata():
     """
     Retrieves metadata about the current Python environment and used libraries.
     Returns:
-        dict: A dictionary containing the Python version and a list of dictionaries 
+        dict: A dictionary containing the Python version and a list of dictionaries
               with the names and versions of the used libraries.
     """
 
-    API_KEY = os.getenv('LOCAL_API_KEY')
-    if ('api_key' not in request.args) | (request.args.get('api_key') != API_KEY):
-        return {
-            "error": "Tu n'as pas accès à cette ressource."
-        }, 403
+    API_KEY = os.getenv("LOCAL_API_KEY")
+    if ("api_key" not in request.args) | (request.args.get("api_key") != API_KEY):
+        return {"error": "Tu n'as pas accès à cette ressource."}, 403
 
-    used_libs = ['flask', 'pygithub', 'aiohttp']
+    used_libs = ["flask", "pygithub", "aiohttp"]
 
     tools_data = {
-        'python': f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}',
-        'libs': [
-            {
-                'name': lib,
-                'version': version(lib)
-            } for lib in used_libs
-        ]
+        "python": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
+        "libs": [{"name": lib, "version": version(lib)} for lib in used_libs],
     }
 
     return tools_data
 
 
-@api_route.get('/gist_metadata')
+@api_route.get("/gist_metadata")
 def fetch_gist_metadata():
     """
     Fetches metadata for GitHub gists of a user.
-    This function retrieves the metadata of GitHub gists for a user specified by the 
-    environment variables 'GITHUB_TOKEN' and 'GITHUB_USERNAME'. If an 'id' parameter 
-    is provided in the request arguments, it returns the metadata for the specific gist 
+    This function retrieves the metadata of GitHub gists for a user specified by the
+    environment variables 'GITHUB_TOKEN' and 'GITHUB_USERNAME'. If an 'id' parameter
+    is provided in the request arguments, it returns the metadata for the specific gist
     with that ID. Otherwise, it returns a list of metadata for all gists of the user.
     Returns:
         dict: Metadata of a specific gist if 'id' is provided in request arguments.
@@ -264,13 +272,11 @@ def fetch_gist_metadata():
         - title: Title derived from the first file's name.
     """
 
-    API_KEY = os.getenv('LOCAL_API_KEY')
-    if ('api_key' not in request.args) | (request.args.get('api_key') != API_KEY):
-        return {
-            "error": "Tu n'as pas accès à cette ressource."
-        }, 403
-    TOKEN = os.getenv('GITHUB_TOKEN')
-    USERNAME = os.getenv('GITHUB_USERNAME')
+    API_KEY = os.getenv("LOCAL_API_KEY")
+    if ("api_key" not in request.args) | (request.args.get("api_key") != API_KEY):
+        return {"error": "Tu n'as pas accès à cette ressource."}, 403
+    TOKEN = os.getenv("GITHUB_TOKEN")
+    USERNAME = os.getenv("GITHUB_USERNAME")
     github = Github(TOKEN)
 
     user = github.get_user(USERNAME)
@@ -282,44 +288,52 @@ def fetch_gist_metadata():
         for g in gists:
             if g.id == gist_id:
                 gist_data = {
-                    'author': g.owner.name,
-                    'gist_id': g.id,
-                    'description': g.description,
-                    'files': [
+                    "author": g.owner.name,
+                    "gist_id": g.id,
+                    "description": g.description,
+                    "files": [
                         {
-                            'name': g.files[file].filename,
-                            'type': g.files[file].type,
-                            'images': [
+                            "name": g.files[file].filename,
+                            "type": g.files[file].type,
+                            "images": [
                                 f"{url}.jpg" for url in parse_tuto_image(g.files[file])
-                            ]
-                        } for file in g.files
+                            ],
+                        }
+                        for file in g.files
                     ],
-                    'embed_url': f'https://gist.github.com/Wishrito/{g.id}.js'
+                    "embed_url": f"https://gist.github.com/Wishrito/{g.id}.js",
                 }
-                gist_data['title'] = str(gist_data['files'][0]['name'].removesuffix(
-                    '.md').title().replace('_', ' '))
+                gist_data["title"] = str(
+                    gist_data["files"][0]["name"]
+                    .removesuffix(".md")
+                    .title()
+                    .replace("_", " ")
+                )
                 return gist_data
     else:
 
         gists_list = [
             {
-                'id': gist.id,
-                'description': gist.description,
-                'files': [
+                "id": gist.id,
+                "description": gist.description,
+                "files": [
                     {
-                        'name': gist.files[file].filename,
-                        'type': gist.files[file].type,
-                        'images': [
+                        "name": gist.files[file].filename,
+                        "type": gist.files[file].type,
+                        "images": [
                             f"{url}.jpg" for url in parse_tuto_image(gist.files[file])
-                        ]
-                    } for file in gist.files
+                        ],
+                    }
+                    for file in gist.files
                 ],
-                'title': '',
-                'embed_url': f'https://gist.github.com/Wishrito/{gist.id}.js'
-            } for gist in gists
+                "title": "",
+                "embed_url": f"https://gist.github.com/Wishrito/{gist.id}.js",
+            }
+            for gist in gists
         ]
         for g in gists_list:
-            g['title'] = str(g['files'][0]['name'].removesuffix(
-                '.md').title().replace('_', ' '))
+            g["title"] = str(
+                g["files"][0]["name"].removesuffix(".md").title().replace("_", " ")
+            )
         return gists_list
     github.close()

@@ -5,10 +5,10 @@ import aiohttp
 from flask import Flask, redirect, render_template, request, url_for
 from werkzeug.routing import Rule
 
-from database import db_route
-from models import db
-from routes import api_route
-from utils import Url, call_api
+from modules.database import db_route
+from modules.models import db
+from modules.routes import api_route
+from modules.utils import Url, call_api
 
 
 def has_no_empty_params(rule: Rule):
@@ -31,12 +31,14 @@ class Portfolio(Flask):
         self.url = Url()
         self.vercel_project_production_url = os.getenv(
             "VERCEL_PROJECT_PRODUCTION_URL")
+        self.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 
 
 app = Portfolio("Portfolio")
 if not app.vercel_project_production_url:
     app.config['SERVER_NAME'] = "view-localhost:5000"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/database.db'
+
+
 # Désactive la modification du suivi
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
