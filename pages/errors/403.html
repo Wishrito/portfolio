@@ -1,53 +1,5 @@
-<!DOCTYPE html>
-<html lang="fr">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Erreur 403 - Accès Interdit</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8d7da;
-            color: #721c24;
-            text-align: center;
-            margin-top: 50px;
-        }
-
-        .container {
-            padding: 20px;
-            border: 2px solid #f5c6cb;
-            background-color: #f8d7da;
-            display: inline-block;
-        }
-
-        h1 {
-            font-size: 48px;
-        }
-
-        p {
-            font-size: 20px;
-        }
-
-        .error-details {
-            margin-top: 20px;
-            font-size: 16px;
-            color: #856404;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="container">
-        <h1>Erreur 403</h1>
-        <p>Accès interdit. Vous n'avez pas la permission d'accéder à cette ressource.</p>
-
-        {% if e %}
-        <div class="error-details">
-            <p>Détails de l'erreur : {{ e }}</p>
-        </div>
-        {% endif %}
-    </div>
-</body>
-
-</html>
+{% extends "templates/base.html" %}
+{% block title %}Document{% endblock %}
+{% block content %}
+{{ e }}
+{% endblock %}
