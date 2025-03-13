@@ -136,4 +136,4 @@ async def get_gist():
         return render_template('tutorials.html', gist_data=await gist_data.json())
 
 if not app.vercel_project_production_url:
-    app.run(host="view-localhost", port=5000, debug=True)
+    app.run(host="localhost", port=5000, debug=True)

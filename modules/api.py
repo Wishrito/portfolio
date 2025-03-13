@@ -31,7 +31,6 @@ from .utils import call_api
 
 api_bp = Api("api", __name__, url_prefix="/api")
 api_bp.template_folder = Path(__file__).parent.parent / "pages"
-print(api_bp.template_folder)
 api_bp.static_folder = Path(__file__).parent.parent / "src"
 
 
