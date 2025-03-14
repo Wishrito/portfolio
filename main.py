@@ -22,7 +22,7 @@ def has_no_empty_params(rule: Rule):
 
 app = Portfolio("Portfolio")
 if not app.vercel_project_production_url:
-    app.config['SERVER_NAME'] = "view-localhost:5000"
+    app.config["SERVER_NAME"] = "localhost:5000"
 load_dotenv()
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 
