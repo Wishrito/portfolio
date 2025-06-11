@@ -57,7 +57,7 @@
         },
         {
             "name": "Developpement d'API",
-            "icon": "API-development-logo.png",
+            "icon": "Api-development-logo.png",
             "description": [
                 "Python (Flask, FastAPI)",
                 "JavaScript (Node.js, Express)"
