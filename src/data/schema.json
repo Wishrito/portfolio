@@ -1,0 +1,137 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Wishrito Data schema",
+  "type": "object",
+  "properties": {
+    "languages": {
+      "type": "array",
+      "description": "une liste de langages de programmation",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Le nom du langage de programmation"
+          },
+          "icon": {
+            "type": "string",
+            "description": "L'icône associée au langage de programmation"
+          }
+        },
+        "required": [
+          "name",
+          "icon"
+        ]
+      }
+    },
+
+    "skills": {
+      "type": "array",
+      "description": "une liste de compétences",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Le nom de la compétence"
+          },
+          "icon": {
+            "type": "string",
+            "description": "L'icône associée à la compétence"
+          },
+          "description": {
+            "type": "array",
+            "description": "Une liste de sous-compétences ou de détails sur la compétence",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "icon",
+          "description"
+        ]
+      }
+    },
+
+    "projects": {
+      "type": "array",
+      "description": "une liste de projets",
+      "items": {
+        "type": "object",
+        "properties": {
+          "repo": {
+            "type": "string",
+            "description": "l'URL du dépôt du projet"
+          },
+          "url": {
+            "type": "string",
+            "description": "l'URL du projet"
+          },
+          "description": {
+            "type": "string",
+            "description": "Une description du projet"
+          },
+          "languages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "number",
+                  "description": "L'index du langage dans la liste des langages de programmation"
+                },
+                "use_rate": {
+                  "type": "number",
+                  "description": "Le pourcentage d'utilisation du langage dans le projet, de 0 à 10"
+                }
+              },
+              "description": "Liste des langages de programmation utilisés dans le projet",
+              "required": [
+                "index",
+                "use_rate"
+              ]
+            }
+          }
+        },
+        "required": [
+          "repo",
+          "url",
+          "description",
+          "languages"
+        ]
+      }
+    }
+  },
+  "tutorials": {
+    "type": "array",
+    "description": "une liste de tutoriels",
+    "items": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Le titre du tutoriel"
+        },
+        "paragraphs": {
+          "type": "array",
+          "description": "Une liste de paragraphes du tutoriel",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "title",
+        "url",
+        "description"
+      ]
+    }
+  },
+  "required": [
+    "languages",
+    "skills",
+    "projects"
+  ]
+}

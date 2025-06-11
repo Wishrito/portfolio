@@ -1,15 +1,16 @@
+import json
 import os
 from pathlib import Path
+import sys
 
+import aiohttp
 from dotenv import load_dotenv
 from flask import redirect, render_template, request
 from werkzeug.routing import Rule
 
-from modules.classes import Portfolio
-from modules.database import db_bp
 from modules.api import api_bp
+from modules.classes import Portfolio
 from modules.handlers import handler_bp
-from modules.models import db
 from modules.utils import call_api
 
 
@@ -23,38 +24,36 @@ app = Portfolio("Portfolio")
 if not app.vercel_project_production_url:
     app.config['SERVER_NAME'] = "localhost:5000"
 load_dotenv()
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 
-# Désactive la modification du suivi
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db.init_app(app)
-with app.app_context():
-    db.create_all()
-
-app.register_blueprint(db_bp)
 app.register_blueprint(api_bp)
 app.register_blueprint(handler_bp)
 
 
-@app.get('/')
-def home():
+@app.get("/")
+async def home():
     """
     Renders the home page template.
 
     Returns:
         Response: The rendered HTML template for the home page.
     """
-    return render_template("index.html")
+    skills = await call_api(
+        app.url.api_skills, parameters={"api_key": os.getenv("LOCAL_API_KEY")}
+    )
+    print(f"skills : {skills}")
+    return render_template("index.j2", skills=skills.get("skills", []))
 
 
 @app.route("/site-map")
-def site_map():
-    links: list[tuple[str, str]] = []
-    for page in Path(app.template_folder).glob("*.html"):
-        # Filter out rules we can't navigate to in a browser
-        # and rules that require parameters
-        links.append((page.stem, page.name))
-    return render_template("sitemap.html", routes=links)
+async def site_map():
+    if app.template_folder:
+        links: list[tuple[str, str]] = [
+            (page.stem, page.name) for page in Path(app.template_folder).glob("*.j2")
+        ]
+
+        return render_template("sitemap.j2", routes=links)
+    else:
+        return redirect("/")
 
 
 @app.get('/projects')
@@ -71,7 +70,7 @@ async def projects():
             'api_key': os.getenv('LOCAL_API_KEY')
         }
     )
-    return render_template("projects.html", data=projects_data)
+    return render_template("projects.j2", data=projects_data)
 
 
 @app.get('/about')
@@ -79,64 +78,47 @@ async def about():
     """
     Fetches tools data from an API endpoint and renders the 'about' page.
 
-    This function retrieves the root URL from the environment variable 
-    'VERCEL_PROJECT_PRODUCTION_URL'. If the environment variable is not set, 
-    it defaults to the request's root URL. It then fetches data from the 
-    '/api/tools' endpoint and passes this data to the 'about.html' template 
+    This function retrieves the root URL from the environment variable
+    'VERCEL_PROJECT_PRODUCTION_URL'. If the environment variable is not set,
+    it defaults to the request's root URL. It then fetches data from the
+    '/api/tools' endpoint and passes this data to the 'about.j2' template
     for rendering.
 
     Returns:
         A rendered HTML template for the 'about' page with tools data.
     """
     libs_data = await call_api(
-        app.url.api_tools, {"api_key": os.getenv("LOCAL_API_KEY")}
+        url=app.url.api_tools, parameters={"api_key": os.getenv("LOCAL_API_KEY")}
     )
-    return render_template("about.html", tools_data=libs_data)
+    return render_template("about.j2", tools_data=libs_data)
 
-@app.get('/gists')
+
+@app.get("/tutorials")
 async def get_gists():
     """
-    Fetches the list of gists from the specified URL and renders the 'tutorials.html' template with the gists data.
+    Fetches the list of gists from the specified URL and renders the 'tutorials.j2' template with the gists data.
 
     The function first retrieves the root URL from the environment variable 'VERCEL_PROJECT_PRODUCTION_URL'.
     If the environment variable is not set, it defaults to using the request's URL root.
     It then constructs the full URL to fetch the gists metadata and makes a GET request to that URL.
-    Finally, it renders the 'tutorials.html' template with the fetched gists data and the root URL.
+    Finally, it renders the 'tutorials.j2' template with the fetched gists data and the root URL.
 
     Returns:
-        str: The rendered 'tutorials.html' template with the gists data and root URL.
+        str: The rendered 'tutorials.j2' template with the gists data and root URL.
     """
-    gists_list = await call_api(
-        app.url.api_gists, {"api_key": os.getenv("LOCAL_API_KEY")}
-    )
-    return render_template("tutorials.html", gists=gists_list)
+    if "id" in request.args:
+        gist_id = request.args.get("id")
 
+        gist_data = call_api(
+            app.url.api_gists, {"id": gist_id, "api_key": os.getenv("LOCAL_API_KEY")}
+        )
+        return render_template("tutorials.j2", gist_data=gist_data)
 
-@app.get('/gist')
-async def get_gist():
-    """
-    Fetches gist metadata and renders the tutorials template.
-    This function retrieves the gist ID from the request arguments and constructs
-    the root URL based on the environment variable 'VERCEL_PROJECT_PRODUCTION_URL'.
-    If the environment variable is not set, it defaults to the request's root URL.
-    It then fetches the gist metadata from the constructed URL and renders the
-    'tutorials.html' template with the fetched data.
-    Returns:
-        A redirect to '/gists' if the gist ID is not provided, otherwise renders
-        the 'tutorials.html' template with the gist metadata.
-    Raises:
-        requests.exceptions.RequestException: If there is an issue with the HTTP request.
-    """
-
-    gist_id = request.args.get('id')
-
-    if not gist_id:
-        return redirect('/gists')
-
-    gist_data = call_api(
-        app.url.api_gists, {"id": gist_id, "api_key": os.getenv("LOCAL_API_KEY")}
-    )
-    return render_template("tutorials.html", gist_data=gist_data)
+    else:
+        tutorials_list = await call_api(
+            app.url.api_gists, {"api_key": os.getenv("LOCAL_API_KEY")}
+        )
+        return render_template("tutorials.j2", gists=tutorials_list)
 
 if not app.vercel_project_production_url:
     app.run(host="localhost", port=5000, debug=True)

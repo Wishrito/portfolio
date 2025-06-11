@@ -5,8 +5,6 @@ from flask import render_template
 from .classes import Error
 
 handler_bp = Error("errors", __name__)
-handler_bp.template_folder = Path(__file__).parent.parent / "pages"
-handler_bp.static_folder = Path(__file__).parent.parent / "src"
 
 
 @handler_bp.app_errorhandler(404)
@@ -20,7 +18,7 @@ def page_not_found(error):
     Returns:
         A rendered template for the 404 error page.
     """
-    return render_template("errors/404.html", e=error)
+    return render_template("errors/404.j2", e=error)
 
 
 @handler_bp.app_errorhandler(403)
@@ -34,4 +32,4 @@ def forbidden(error):
     Returns:
         A rendered HTML template for the 403 error page.
     """
-    return render_template("errors/403.html", e=error)
+    return render_template("errors/403.j2", e=error)

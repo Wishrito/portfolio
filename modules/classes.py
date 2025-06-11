@@ -1,7 +1,10 @@
 import os
 from pathlib import Path
+from typing import Any
 
 from flask import Blueprint, Flask, request
+
+from typing import TypedDict, List
 
 
 class Url:
@@ -12,11 +15,15 @@ class Url:
 
     @property
     def api_gists(self):
-        return self.root_url + "/api/gist_metadata"
+        return self.root_url + "/api/tutorials"
 
     @property
     def api_tools(self):
         return self.root_url + "/api/tools"
+
+    @property
+    def api_skills(self):
+        return self.root_url + "/api/skills"
 
     @property
     def root_url(self):
@@ -64,7 +71,37 @@ class Portfolio(Flask):
         self.vercel_project_production_url = os.getenv("VERCEL_PROJECT_PRODUCTION_URL")
 
 
-class Api(Blueprint):
+class CustomBlueprint(Blueprint):
+    def __init__(
+        self,
+        name: str,
+        import_name: str,
+        static_folder: str | os.PathLike[str] | None = None,
+        static_url_path: str | None = None,
+        template_folder: str | os.PathLike[str] | None = None,
+        url_prefix: str | None = None,
+        subdomain: str | None = None,
+        url_defaults: dict[str, Any] | None = None,
+        root_path: str | None = None,
+        cli_group: str | None = ...,  # type: ignore
+    ) -> None:
+        super().__init__(
+            name,
+            import_name,
+            Path(__file__).parent.parent / "src",
+            static_url_path,
+            Path(__file__).parent.parent / "pages",
+            url_prefix,
+            subdomain,
+            url_defaults,
+            root_path,
+            cli_group,
+        )
+        self.url = Url()
+        self.vercel_project_production_url = os.getenv("VERCEL_PROJECT_PRODUCTION_URL")
+
+
+class Api(CustomBlueprint):
     def __init__(
         self,
         name,
@@ -90,11 +127,9 @@ class Api(Blueprint):
             root_path,
             cli_group,
         )
-        self.url = Url()
-        self.vercel_project_production_url = os.getenv("VERCEL_PROJECT_PRODUCTION_URL")
 
 
-class Database(Blueprint):
+class Database(CustomBlueprint):
     def __init__(
         self,
         name,
@@ -120,11 +155,9 @@ class Database(Blueprint):
             root_path,
             cli_group,
         )
-        self.url = Url()
-        self.vercel_project_production_url = os.getenv("VERCEL_PROJECT_PRODUCTION_URL")
 
 
-class Error(Blueprint):
+class Error(CustomBlueprint):
     def __init__(
         self,
         name,
@@ -150,5 +183,3 @@ class Error(Blueprint):
             root_path,
             cli_group,
         )
-        self.url = Url()
-        self.vercel_project_production_url = os.getenv("VERCEL_PROJECT_PRODUCTION_URL")

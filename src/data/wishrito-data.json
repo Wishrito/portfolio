@@ -1,0 +1,179 @@
+{
+    "$schema": "./schema.json",
+    "languages": [
+        {
+            "name": "Python",
+            "icon": "Python-logo.png"
+        },
+        {
+            "name": "JavaScript",
+            "icon": "JavaScript-logo.png"
+        },
+        {
+            "name": "HyperText Markup Language (HTML)",
+            "icon": "HTML-logo.png"
+        },
+        {
+            "name": "Cascading Style Sheets (CSS)",
+            "icon": "CSS-logo.png"
+        },
+        {
+            "name": "Jinja2",
+            "icon": "Jinja2-logo.png"
+        },
+        {
+            "name": "Java",
+            "icon": "Java-logo.png"
+        },
+        {
+            "name": "PHP",
+            "icon": "PHP-logo.png"
+        }
+    ],
+    "skills": [
+        {
+            "name": "Developpement Web",
+            "icon": "Web-development-logo.png",
+            "description": [
+                "HTML",
+                "CSS",
+                "JavaScript",
+                "Jinja2"
+            ]
+        },
+        {
+            "name": "Developpement Python",
+            "icon": "Python-development-logo.png",
+            "description": [
+                "Tests divers",
+                "Programmation orientée objet",
+                "Flask, FastAPI",
+                "SQLAlchemy",
+                "Pandas",
+                "Discord.py (et autres wrappers API)",
+                "Requests",
+                "BeautifulSoup"
+            ]
+        },
+        {
+            "name": "Developpement d'API",
+            "icon": "API-development-logo.png",
+            "description": [
+                "Python (Flask, FastAPI)",
+                "JavaScript (Node.js, Express)"
+            ]
+        },
+        {
+            "name": "Developpement de bots Discord",
+            "icon": "Discord-bot-development-logo.png",
+            "description": [
+                "Python (Discord.py)",
+                "multiples API wrappers"
+            ]
+        },
+        {
+            "name": "Hébergement et déploiement",
+            "icon": "Hosting-and-deployment-logo.png",
+            "description": [
+                "Hébergement web",
+                "Hébergement de bots Discord",
+                "Hébergement d'API",
+                "Docker",
+                "GitHub Pages",
+                "Vercel"
+            ]
+        },
+        {
+            "name": "Développement SQL",
+            "icon": "SQL-development-logo.png",
+            "description": [
+                "MySQL",
+                "MariaDB",
+                "SQLite",
+                "Oracle SQL"
+            ]
+        }
+    ],
+
+    "projects": [
+        {
+            "repo": "SantéPlus",
+            "url": "https://github.com/Wishrito/projet-php",
+            "description": "Un projet scolaire PHP, SantéPlus est un site de gestion de patients et de médecins, développé en PHP avec MySQL.",
+            "languages": [
+                {
+                    "index": 6,
+                    "use_rate": 98.2
+                },
+                {
+                    "index": 3,
+                    "use_rate": 1.8
+                }
+            ]
+        },
+        {
+            "repo": "Penacony",
+            "url": "https://github.com/louigi1645/java-project",
+            "description": "Un projet scolaire Java, Penacony est un CRM d'hotellerie, développé en Java avec Spring Boot, Thymeleaf et MySQL.",
+            "languages": [
+                {
+                    "index": 5,
+                    "use_rate": 100
+                }
+            ]
+        },
+        {
+            "repo": "Bread-Chan",
+            "url": "https://github.com/wishrito/Bread-Chan",
+            "description": "Multifunction Discord bot using Discord.py",
+            "languages": [
+                {
+                    "index": 0,
+                    "use_rate": 100
+                }
+            ]
+        },
+        {
+            "repo": "Theytube",
+            "url": "https://github.com/Wishrito/theytube",
+            "description": "[PROOF OF CONCEPT] an adless youtube \"client\"",
+            "languages": [
+                {
+                    "index": 0,
+                    "use_rate": 26.9
+                },
+                {
+                    "index": 1,
+                    "use_rate": 13.5
+                },
+                {
+                    "index": 4,
+                    "use_rate": 25.7
+                },
+                {
+                    "index": 3,
+                    "use_rate": 33.9
+                }
+            ]
+        },
+        {
+            "repo": "Hunter API",
+            "url": "https://github.com/Wishrito/Hunter-API",
+            "description": "[NOT RELEASED] a gigantic Monster Hunter database project, made in HTML, Python (Flask), Javascript and SQL",
+            "languages": [
+                {
+                    "index": 0,
+                    "use_rate": 28.7
+                },
+                {
+                    "index": 2,
+                    "use_rate": 66.3
+                },
+                {
+                    "index": 3,
+                    "use_rate": 5.0
+                }
+            ]
+        }
+    ]
+}

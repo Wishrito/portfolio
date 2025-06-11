@@ -1,0 +1,102 @@
+{% extends "templates/base.j2" %} {% block title %}Mes projets{% endblock %} {%
+block imports %}
+<script src="{{ url_for('static', filename='scripts/script.js') }}"></script>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/style.css') }}"
+/>
+{% endblock %} {% block content %}
+<!-- Section des projets -->
+<div class="container py-5">
+  <div class="projects-header">
+    <div class="particles">
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+    </div>
+
+    <div class="container">
+      <h2 class="projects-title text-center">
+        <span class="highlight">Mes projets</span>
+        {% if data and data.projects %}
+        <span class="projects-count">{{ data.projects | length }}</span>
+        {% endif %}
+      </h2>
+
+      {% if data %}
+      <div class="filter-container">
+        <label for="language_select" class="filter-label"
+          >Filtrer par langage</label
+        >
+        <div class="select-wrapper">
+          <select
+            name="language"
+            id="language_select"
+            title="langages"
+            class="language-select"
+          >
+            <option value="all" selected>Tous les langages</option>
+            {% for language in data.languages %}
+            <option value="{{ language }}">{{ language.title() }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="projects">
+    {% for project in data.projects %}
+    <div
+      class="col col-lg-4 col-md-6 col-sm-12 mb-4"
+      data-languages="{{ project.string_languages }}"
+    >
+      <div class="card project-card h-100">
+        <div class="card-header">
+          <h3 class="card-title">{{ project.repo }}</h3>
+        </div>
+        <div class="card-body">
+          {% if project.description %}
+          <p class="card-text">{{ project.description }}</p>
+          {% else %}
+          <p class="card-text text-muted">Aucune description fournie</p>
+          {% endif %}
+
+          <div class="languages-section">
+            <h4 class="languages-title">Langages utilisés</h4>
+            <ul class="list-group languages-list">
+              {% for lang in project.languages %}
+              <li
+                class="list-group-item language-item"
+                data-lang="{{ lang.name }}"
+              >
+                <span class="language-name">{{ lang.name }}</span>
+                <span class="language-percentage">{{ lang.use_rate }}%</span>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <a
+            href="{{ project.url }}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="project-link"
+          >
+            Voir le projet
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+  {% else %}
+  <div class="alert alert-warning">
+    <p class="mb-0">Aucun projet trouvé.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

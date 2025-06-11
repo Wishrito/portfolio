@@ -1,0 +1,66 @@
+{% extends "templates/base.j2" %}
+{% block title %}Mes Tutoriels{% endblock %}
+{% block meta %}
+<meta name="description" content="Une bibliothèque contenant mes Gists Github">
+<meta property="og:title" content="Portfolio - Tutoriels">
+{% if gist_data %}
+<meta name="author" content="{{ gist_data.author}}">
+<meta property="og:description" content="{{ gist_data.description}}">
+<meta property="og:image" content="{{ gist_data['files'][0]['images'][0] }}">
+<meta property="og:image:alt" content="{{ gist_data.title }}">
+<meta property="twitter:image" content="{{ gist_data['files'][0]['images'][0] }}">
+<meta property="twitter:image:alt" content="{{ gist_data.title }}">
+{% elif gists %}
+<meta property="og:image"
+    content="https://www.digital-learning.fse.manchester.ac.uk/wp-content/themes/uom-theme/assets/images/default-banner.jpg">
+<meta property="og:image:alt" content="Default banner">
+{% endif %}
+{% endblock %}
+{% block content %}
+<!-- Liste des gists -->
+<div class="container py-5">
+    {% if gists %}
+    <div id="description" class="card mb-4">
+        <div class="card-body">
+            <p class="card-text">Bienvenue sur la page des tutoriels ! Ici, vous trouverez une collection de
+                micro-tutoriels Python couvrant
+                divers sujets et astuces pour améliorer vos compétences en programmation. Chaque tutoriel est conçu pour
+                être
+                court et précis, vous permettant d'apprendre rapidement et efficacement.</p>
+        </div>
+    </div>
+    {% endif %}
+<div class="row row-cols-1 row-cols-md-2 g-4">
+    {% if gists %}
+        {% for gist in gists %}
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><a href="/gist?id={{ gist.id }}" class="text-decoration-none">{{ gist.title
+                            }}</a></h5>
+                    {% if gist.description != '' %}
+                    <p class="card-text">{{ gist.description }}</p>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-transparent">
+                    <img class="img-fluid rounded" src="{{ gist['files'][0]['images'][0] }}"
+                        alt="{{ gist.title }} thumbnail">
+                </div>
+            </div>
+            </div>
+        {% endfor %}
+        {% elif gist_data %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">{{ gist_data.title }}</h5>
+                </div>
+                <div class="card-body">
+                    <script src="{{gist_data.embed_url}}"></script>
+                </div>
+            </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
