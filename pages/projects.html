@@ -5,42 +5,52 @@
 {% endblock %}
 {% block content %}
 <!-- Section des projets -->
-<div>
-    <h2>Mes projets</h2>
+<div class="container py-5">
+    <h2 class="text-center mb-4">Mes projets</h2>
     {% if data %}
-    <select name="language" id="language_select" title="langages">
-        <option value="all" selected>Tous</option>
-        {% for language in data.languages %}
-        <option value="{{ language }}">{{ language.title() }}</option>
-        {% endfor %}
-    </select>
-    <section class="projects" id="projects">
+    <div class="mb-4">
+        <select name="language" id="language_select" title="langages" class="form-select">
+            <option value="all" selected>Tous</option>
+            {% for language in data.languages %}
+            <option value="{{ language }}">{{ language.title() }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <section class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="projects">
         {% for project in data.projects %}
-        <div class="card" data-languages="{{ project.string_languages }}">
-            <header>
-                <h3>{{ project.repo }}</h3>
-            </header>
-            {% if project.description %}
-            <p>{{ project.description }}</p>
-            {% else %}
-            <p>Aucune description fournie</p>
-            {% endif %}
-            <div>
-                <h4>Langages utilisés :</h4>
-                <ul class="languages">
-                {% for lang in project.languages %}
-                    <li>{{ lang.name }}</li>
-                {% endfor %}
-                </ul>
-            </div>
-            <div>
-                <a href="{{ project.url }}" target="_blank" rel="noopener">Voir le projet</a>
+        <div class="col" data-languages="{{ project.string_languages }}">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h3 class="card-title">{{ project.repo }}</h3>
+                </div>
+                <div class="card-body">
+                    {% if project.description %}
+                    <p class="card-text">{{ project.description }}</p>
+                    {% else %}
+                    <p class="card-text text-muted">Aucune description fournie</p>
+                    {% endif %}
+<div class="mb-3">
+    <h4 class="h5">Langages utilisés :</h4>
+    <ul class="list-group list-group-flush">
+        {% for lang in project.languages %}
+                            <li class="list-group-item">{{ lang.name }}</li>
+                            {% endfor %}
+                            </ul>
+                            </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ project.url }}" target="_blank" rel="noopener" class="btn btn-primary">Voir le
+                        projet</a>
+                </div>
             </div>
         </div>
         {% endfor %}
     </section>
     {% else %}
-    <p>Aucun projet trouvé.</p>
+    <div class="alert alert-warning">
+        <p class="mb-0">Aucun projet trouvé.</p>
+    </div>
     {% endif %}
 </div>
 {% endblock %}

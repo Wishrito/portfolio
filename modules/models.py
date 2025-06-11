@@ -73,6 +73,7 @@ class Gist(Table):
     """a table containing gists"""
     __tablename__ = "gist"
     id: Mapped[str] = mapped_column(primary_key=True)
+    title: Mapped[str] = mapped_column(nullable=False)
     author: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=True)
     embed_url: Mapped[str] = mapped_column(nullable=False)

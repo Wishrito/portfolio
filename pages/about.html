@@ -6,22 +6,44 @@
 {% endblock %}
 {% block content %}
 <!-- Liste des outils -->
-<main>
-    <p>Avant toute explication des dépendances utilisées, j'aimerai préciser quelque chose.</p>
-    <p>ce portfolio n'a rien de très impressionnant visuellement, et n'a pas vocation de l'être.</p>
-    <p>ce que je souhaite mettre en avant, ce sont simplement des fonctionnalités techniques, à savoir des API,
-        principalement</p>
-</main>
-{% if tools_data %}
-    <h2>Technologies Utilisées</h2>
-    <p>Python Version: {{ tools_data.python }}</p>
-    <h3>Bibliothèques Utilisées</h3>
-    <ul>
-        {% for lib in tools_data.libs %}
-            <li><a href="https://pypi.org/project/{{ lib.name }}">{{ lib.name }}</a>: {{ lib.version }}</li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>Aucune donnée disponible.</p>
-{% endif %}
+<main class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <p>Avant toute explication des dépendances utilisées, j'aimerai préciser quelque chose.</p>
+                    <p>ce portfolio n'a rien de très impressionnant visuellement, et n'a pas vocation de l'être.</p>
+                    <p>ce que je souhaite mettre en avant, ce sont simplement des fonctionnalités techniques, à savoir
+                        des API, principalement</p>
+                    </div>
+                    </div>
+                    
+                    {% if tools_data %}
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Technologies Utilisées</h2>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Python Version: <span class="badge bg-secondary">{{ tools_data.python }}</span>
+                    </p>
+            
+                    <h3>Bibliothèques Utilisées</h3>
+                    <ul class="list-group">
+                        {% for lib in tools_data.libs %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="https://pypi.org/project/{{ lib.name }}">{{ lib.name }}</a>
+                            <span class="badge bg-primary rounded-pill">{{ lib.version }}</span>
+                        </li>
+                        {% endfor %}
+                        </ul>
+                </div>
+                </div>
+            {% else %}
+            <div class="alert alert-info">
+                <p class="mb-0">Aucune donnée disponible.</p>
+            </div>
+            {% endif %}
+        </div>
+        </div>
+        </main>
 {% endblock %}

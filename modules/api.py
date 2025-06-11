@@ -22,6 +22,7 @@ from pathlib import Path
 import aiohttp
 from flask import jsonify, request
 from github import Github
+from github.GistFile import GistFile as gistFile
 from sqlalchemy import select, update
 
 from .classes import Api
@@ -34,7 +35,7 @@ api_bp.template_folder = Path(__file__).parent.parent / "pages"
 api_bp.static_folder = Path(__file__).parent.parent / "src"
 
 
-def parse_tuto_image(file: GistFile | str) -> list[str]:
+def parse_tuto_image(file: gistFile | str) -> list[str]:
     """
     Extracts image URLs from the content of a GistFile.
 
@@ -44,8 +45,8 @@ def parse_tuto_image(file: GistFile | str) -> list[str]:
     Returns:
         list[str]: A list of image URLs found in the content.
     """
-    texte = None
-    if isinstance(file, GistFile):
+    texte = ""
+    if isinstance(file, gistFile):
         texte = file.content
     else:
         texte = file
@@ -58,7 +59,9 @@ if api_bp.vercel_project_production_url is None:
 
     @api_bp.route("/refresh_db", methods=["GET", "POST"])
     async def refresh_db():
-        gists: list[dict] = await call_api(api_bp.url.api_gists)
+        API_KEY = os.getenv("LOCAL_API_KEY")
+
+        gists: list[dict] = await call_api(api_bp.url.api_gists, {"api_key": API_KEY})
         for g in gists:
             select_stmt = (
                 select(Gist, GistFile, GistFileImage).where(Gist.author == g["author"])
@@ -80,6 +83,7 @@ if api_bp.vercel_project_production_url is None:
 def create_gist(gist_data: dict):
     new_gist = Gist(
         id=gist_data["id"],
+        title=gist_data["title"],
         author=gist_data["author"],
         description=gist_data["description"],
         embed_url=gist_data["embed_url"],
@@ -235,48 +239,84 @@ def fetch_gist_metadata():
 
     user = github.get_user(USERNAME)
     gists = user.get_gists()
+    if api_bp.vercel_project_production_url is None:
+        if "id" in request.args:
+            gist_id = request.args.get("id")
 
-    if "id" in request.args:
-        gist_id = request.args.get("id")
+            for g in gists:
+                if g.id == gist_id:
+                    gist_data = {
+                        "author": g.owner.name,
+                        "gist_id": g.id,
+                        "description": g.description,
+                        "files": [
+                            {
+                                "name": g.files[file].filename,
+                                "type": g.files[file].type,
+                                "images": [
+                                    f"{url}.jpg"
+                                    for url in parse_tuto_image(g.files[file])
+                                ],
+                            }
+                            for file in g.files
+                        ],
+                        "embed_url": f"https://gist.github.com/Wishrito/{g.id}.js",
+                    }
+                    gist_data["title"] = str(
+                        gist_data["files"][0]["name"]
+                        .removesuffix(".md")
+                        .title()
+                        .replace("_", " ")
+                    )
+                    return gist_data
+        else:
 
-        for g in gists:
-            if g.id == gist_id:
-                gist_data = {
-                    "author": g.owner.name,
-                    "gist_id": g.id,
-                    "description": g.description,
+            gists_list = [
+                {
+                    "author": gist.owner.name,
+                    "id": gist.id,
+                    "description": gist.description,
                     "files": [
                         {
-                            "name": g.files[file].filename,
-                            "type": g.files[file].type,
+                            "name": gist.files[file].filename,
+                            "type": gist.files[file].type,
                             "images": [
-                                f"{url}.jpg" for url in parse_tuto_image(g.files[file])
+                                f"{url}.jpg"
+                                for url in parse_tuto_image(gist.files[file])
                             ],
                         }
-                        for file in g.files
+                        for file in gist.files
                     ],
-                    "embed_url": f"https://gist.github.com/Wishrito/{g.id}.js",
+                    "title": "",
+                    "embed_url": f"https://gist.github.com/Wishrito/{gist.id}.js",
                 }
-                gist_data["title"] = str(
-                    gist_data["files"][0]["name"]
-                    .removesuffix(".md")
-                    .title()
-                    .replace("_", " ")
+                for gist in gists
+            ]
+            for g in gists_list:
+                g["title"] = str(
+                    g["files"][0]["name"].removesuffix(".md").title().replace("_", " ")
                 )
-                return gist_data
+            return gists_list
     else:
-
+        stmt = (
+            select(Gist, GistFile, GistFileImage)
+            # Condition de jointure correcte pour GistFile
+            .join(GistFile, GistFile.gist_id == Gist.id)
+            # Condition de jointure correcte pour GistFileImage
+            .join(GistFileImage, GistFileImage.gistfile_id == GistFile.id)
+        )
+        result = db.session.execute(stmt)
+        print(result)
         gists_list = [
             {
+                "author": gist.owner.name,
                 "id": gist.id,
                 "description": gist.description,
                 "files": [
                     {
                         "name": gist.files[file].filename,
                         "type": gist.files[file].type,
-                        "images": [
-                            f"{url}.jpg" for url in parse_tuto_image(gist.files[file])
-                        ],
+                        "images": [f"{url}.jpg" for url in parse_tuto_image(result[2])],
                     }
                     for file in gist.files
                 ],

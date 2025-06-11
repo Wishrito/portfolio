@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 
-import aiohttp
 from dotenv import load_dotenv
 from flask import redirect, render_template, request
 from werkzeug.routing import Rule
@@ -22,7 +21,7 @@ def has_no_empty_params(rule: Rule):
 
 app = Portfolio("Portfolio")
 if not app.vercel_project_production_url:
-    app.config["SERVER_NAME"] = "localhost:5000"
+    app.config['SERVER_NAME'] = "localhost:5000"
 load_dotenv()
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 
@@ -89,9 +88,10 @@ async def about():
     Returns:
         A rendered HTML template for the 'about' page with tools data.
     """
-    async with aiohttp.ClientSession() as session:
-        libs_data = await session.get(app.url.api_tools, params={'api_key': os.getenv('LOCAL_API_KEY')})
-        return render_template('about.html', tools_data=await libs_data.json())
+    libs_data = await call_api(
+        app.url.api_tools, {"api_key": os.getenv("LOCAL_API_KEY")}
+    )
+    return render_template("about.html", tools_data=libs_data)
 
 @app.get('/gists')
 async def get_gists():
@@ -106,9 +106,10 @@ async def get_gists():
     Returns:
         str: The rendered 'tutorials.html' template with the gists data and root URL.
     """
-    async with aiohttp.ClientSession() as session:
-        gists_list = await session.get(app.url.api_gists, params={'api_key': os.getenv('LOCAL_API_KEY')})
-        return render_template('tutorials.html', gists=await gists_list.json())
+    gists_list = await call_api(
+        app.url.api_gists, {"api_key": os.getenv("LOCAL_API_KEY")}
+    )
+    return render_template("tutorials.html", gists=gists_list)
 
 
 @app.get('/gist')
@@ -132,9 +133,10 @@ async def get_gist():
     if not gist_id:
         return redirect('/gists')
 
-    async with aiohttp.ClientSession() as session:
-        gist_data = await session.get(app.url.api_gists, params={'id': gist_id, 'api_key': os.getenv('LOCAL_API_KEY')})
-        return render_template('tutorials.html', gist_data=await gist_data.json())
+    gist_data = call_api(
+        app.url.api_gists, {"id": gist_id, "api_key": os.getenv("LOCAL_API_KEY")}
+    )
+    return render_template("tutorials.html", gist_data=gist_data)
 
 if not app.vercel_project_production_url:
     app.run(host="localhost", port=5000, debug=True)
