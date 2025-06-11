@@ -5,7 +5,7 @@ import sys
 
 import aiohttp
 from dotenv import load_dotenv
-from flask import redirect, render_template, request
+from flask import redirect, render_template, request, send_file
 from werkzeug.routing import Rule
 
 from modules.api import api_bp
@@ -119,6 +119,18 @@ async def get_gists():
             app.url.api_gists, {"api_key": os.getenv("LOCAL_API_KEY")}
         )
         return render_template("tutorials.j2", gists=tutorials_list)
+
+
+@app.get("/grille")
+def grille():
+    """
+    Renders the 'skill grille'.
+
+    Returns:
+        str: The rendered HTML template for the grille page.
+    """
+    return send_file(f"{app.static_folder}/data/BTS SIO 2025 - Tableau de synthese.pdf")
+
 
 if not app.vercel_project_production_url:
     app.run(host="localhost", port=5000, debug=True)
